@@ -36,6 +36,11 @@ public:
     */
     bool operator!=(const Cube &other) const;
     
+    /**
+    Test for cube ordering (used by std::set)
+    */
+    bool operator<(const Cube &other) const;
+
 private:
     static const unsigned char SOLVED_STATE[];
     static const int STATE_SIZE = 13;

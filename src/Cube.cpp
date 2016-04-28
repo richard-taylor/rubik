@@ -29,3 +29,8 @@ bool Cube::operator!=(const Cube &other) const
 {
     return (memcmp(state, other.state, STATE_SIZE) != 0);
 }
+
+bool Cube::operator<(const Cube &other) const
+{
+    return (memcmp(state, other.state, STATE_SIZE) < 0);
+}
