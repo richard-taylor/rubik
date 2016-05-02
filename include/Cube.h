@@ -43,9 +43,10 @@ public:
 
 private:
     static const unsigned char SOLVED_STATE[];
-    static const int STATE_SIZE = 13;
+    static const int STATE_SIZE = 14;
     
     unsigned char state[STATE_SIZE];
+    void debug(const char *label);
 };
 
 #endif
