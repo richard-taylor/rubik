@@ -124,6 +124,27 @@ void unpack(byte *packed, byte *unpacked)
     unpacked[19] = ((packed[11] & B3210) << 4) | ((packed[13] & B4) >> 4);
 }
 
+Cube::Twist::Twist(Face face, int turns)
+{
+    assert(turns > 0 && turns < 4);
+    twist = (face << 4) | turns;
+}
+
+Cube::Face Cube::Twist::getFace() const
+{
+    return (Cube::Face)(twist >> 4);
+}
+
+int Cube::Twist::getTurns() const
+{
+    return (twist & 0x03);
+}
+        
+Cube::Twist Cube::Twist::inverse() const
+{
+    return Cube::Twist(getFace(), 4 - getTurns());
+}
+        
 const byte Cube::SOLVED_STATE[] = {3, 32, 64, 99, 130, 160, 1, 35, 69, 103, 137, 171, 0, 0};
 
 enum Corner { RUF, LUF, LUB, RUB, RDF, LDF, LDB, RDB };
@@ -251,10 +272,12 @@ static void edge_swap(byte *unpacked, Edge a, Edge b)
     set_edge(a, hi4(B), lo4(B), unpacked);
 }
 
-void Cube::twist(Face face, int turns)
+void Cube::twist(Twist turn)
 {
-    assert(turns > 0 && turns < 4);
     // debug("before twist");
+    
+    Face face = turn.getFace();
+    int turns = turn.getTurns();
     
     byte unpacked[20];
     unpack(state, unpacked);

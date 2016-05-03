@@ -6,7 +6,26 @@ class Cube
 {
 public:
     enum Face { L, R, U, D, F, B };
+
+    /**
+    Nested class to represent turning a face by 1, 2 or 3 lots of 90 degrees.
     
+    This is the standard outer-block metric.
+    */    
+    class Twist
+    {
+    public:
+        Twist(Face face, int turns);
+        
+        Face getFace() const;
+        int getTurns() const;
+        
+        Twist inverse() const;
+        
+    private:
+        unsigned char twist;
+    };
+
     /**
     Create a solved cube.
     */
@@ -18,13 +37,9 @@ public:
     bool solved() const;
     
     /**
-    Twist one face by a number of 90 degree steps.
-    
-    twist(L, 1) is a standard L turn.
-    twist(L, 2) is a standard L2 turn.
-    twist(L, 3) is a standard L' turn.
+    Make a single move (in outer-block metric terms).
     */
-    void twist(Face face, int turns);
+    void twist(Twist turn);
     
     /**
     Test for cubes with equal positions.
