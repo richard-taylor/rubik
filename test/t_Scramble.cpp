@@ -45,6 +45,11 @@ int main()
     scramble.add(Fi);
     assert(scramble.toString() == "R2 D F'");
     
+    // check the last twist
+    Cube::Twist last = scramble.last();
+    assert(last.getFace() == Cube::F);
+    assert(last.getTurns() == 3);
+    
     // construct a random scramble
     Scramble random(20);
     assert(random.length() == 20);

@@ -40,6 +40,11 @@ public:
     Cube of(const Cube &cube) const;
 
     /**
+    Return the last twist in the scramble.
+    */
+    Cube::Twist last() const;
+
+    /**
     Return the inverse scramble.
     */
     Scramble inverse() const;

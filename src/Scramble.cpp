@@ -51,6 +51,11 @@ Cube Scramble::of(const Cube &cube) const
     return copy;
 }
 
+Cube::Twist Scramble::last() const
+{
+    return twists.back();
+}
+
 Scramble Scramble::inverse() const
 {
     Scramble inv;
