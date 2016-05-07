@@ -15,6 +15,9 @@ TESTBIN=$(subst .o,,$(TESTOBJ))
 INCLUDE=-Iinclude
 LIBRARY=lib/rubik.a
 
+CXXFLAGS=-O3 -DNDEBUG
+DEBUGFLAGS=-g
+
 DEPDIR:=.d
 $(shell mkdir -p $(DEPDIR)/src $(DEPDIR)/test)
 DEPFLAGS=-MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
@@ -30,6 +33,9 @@ clean:
 
 reallyclean: clean
 	rm -rf $(DEPDIR)
+
+debug:
+	$(MAKE) CXXFLAGS='$(DEBUGFLAGS)' clean all
 
 test: $(TESTBIN)
 	@for t in $(TESTBIN); do \
@@ -52,11 +58,11 @@ $(LIBRARY) : $(LIBOBJ) | lib
 	$(AR) rvs $(LIBRARY) $(LIBOBJ)
 
 $(TESTOBJ) : %.o : %.cpp $(DEPDIR)/%.d
-	$(CXX) $(CXXFLAGS) $(DEPFLAGS) $(INCLUDE) -c $< -o $@
+	$(CXX) $(DEBUGFLAGS) $(DEPFLAGS) $(INCLUDE) -c $< -o $@
 	$(POSTCOMP)
     
 $(TESTBIN) : % : %.o $(LIBRARY)
-	$(CXX) $(CXXFLAGS) $< $(LIBRARY) -o $@
+	$(CXX) $(DEBUGFLAGS) $< $(LIBRARY) -o $@
 
 $(DEPDIR)/%.d: ;
 .PRECIOUS: $(DEPDIR)/%.d
