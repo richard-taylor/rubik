@@ -58,7 +58,11 @@ template <class LayerType> Cache<LayerType>::Cache(int deep)
             
             layers[d].add(pos.cube, pos.scramble);
             
-            // and push following positions onto the stack
+            // push following positions onto the stack,
+            // unless we are the maximum depth.
+            
+            if (d == deep)
+                continue;
             
             int last = (d > 0) ? pos.scramble.last().getFace() : -1;
             
@@ -89,6 +93,8 @@ template <class LayerType> int Cache<LayerType>::depth() const
 
 template <class LayerType> int Cache<LayerType>::count(int deep)
 {
+    assert(deep >=0 && deep <= depth());
+
     return layers[deep].size();
 }
 
@@ -102,6 +108,8 @@ bool Cache<LayerType>::contains(const Cube &cube, int deep /* = -1 */) const
     }
     else
     {
+        assert(deep >=0 && deep <= depth());
+        
         return layers[deep].contains(cube);
     }
 }
@@ -118,6 +126,21 @@ int Cache<LayerType>::layer(const Cube &cube) const
         }
     }
     return NOT_A_LAYER;
+}
+
+template <class LayerType>
+//
+const LayerType& Cache<LayerType>::get_layer(const Cube &cube) const
+{
+    for (int i = depth(); i >= 0; --i)
+    {
+        if (layers[i].contains(cube))
+        {
+            return layers[i];
+        }
+    }
+    assert(false);
+    return layers[0];
 }
 
 #endif

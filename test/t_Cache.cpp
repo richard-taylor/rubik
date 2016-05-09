@@ -28,7 +28,7 @@ int main()
     assert(!cache.contains(cube, 2));
     
     // the solution to a cube is the inverse of the scramble
-    Scramble solution;// = cache.solution(cube);
+    Scramble solution = cache.get_layer(cube).solution(cube);
     assert(solution.toString() == "F' U' R'");
     
     // should not find a cube that has 4 turns

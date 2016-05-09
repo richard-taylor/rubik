@@ -5,11 +5,9 @@
 
 int main()
 {
-    int N = 4;
-    
-	Cache<CacheCube> cache(N);
+	Cache<CacheCube> cache(6);
 
-	for (int i = 0; i <= N; i++)
+	for (int i = 0; i <= cache.depth(); i++)
 	{
 	    std::cout << "got " << cache.count(i) << " positions." << std::endl;
 	}

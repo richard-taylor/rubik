@@ -32,7 +32,7 @@ public:
     /**
     Get the layer that contains a cached state.
     */
-    //const LayerType& get_layer(const Cube &cube) const;
+    const LayerType& get_layer(const Cube &cube) const;
     
 private:
     std::vector<LayerType> layers;

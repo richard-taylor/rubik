@@ -42,8 +42,9 @@ public:
     bool contains(const Cube &cube) const;
     
     /**
-    Retrieve the scramble for a given cube state.
+    Retrieve the solution for a given cube state.
     */
+    Scramble solution(const Cube &cube) const;
     
 private:
     std::map<Cube, Scramble> m_map;
