@@ -1,21 +1,12 @@
 
 #include <cassert>
 #include "Cache.h"
+#include "CacheCube.h"
 
 int main()
 {
-    // construct a Cache
-    Cache cache;
-
-    // should be empty
-    assert(cache.depth() == 0);
-
-    // extend it to 1 move
-    cache.extend(1);
-    assert(cache.depth() == 1);
-    
-    // jump to 3 moves
-    cache.extend(3);
+    // construct a Cache of 3 moves
+    Cache<CacheCube> cache(3);
     assert(cache.depth() == 3);
     
     // count the cubes at each depth
@@ -37,7 +28,7 @@ int main()
     assert(!cache.contains(cube, 2));
     
     // the solution to a cube is the inverse of the scramble
-    Scramble solution = cache.solution(cube);
+    Scramble solution;// = cache.solution(cube);
     assert(solution.toString() == "F' U' R'");
     
     // should not find a cube that has 4 turns

@@ -1,0 +1,123 @@
+
+#ifndef CACHE_IMPL
+#define CACHE_IMPL
+
+// template implementation included by Cache.h
+
+#include <cassert>
+#include <stack>
+
+#include "Cube.h"
+#include "Scramble.h"
+
+const int NOT_A_LAYER = -1;
+
+extern bool cant_follow(int last, int next);
+
+struct Pos
+{
+    Cube cube;
+    Scramble scramble;
+    
+    Pos(const Cube &a_cube, const Scramble &a_scramble) : cube(a_cube), scramble(a_scramble)
+    {
+    }
+};
+
+template <class LayerType> Cache<LayerType>::Cache(int deep)
+{
+    for (int i = 0; i <= deep; i++)
+    {
+        layers.push_back(LayerType(i));
+    }
+    
+    std::stack<Pos> stack;
+    
+    stack.push(Pos(Cube(), Scramble()));    // start with a solved cube
+    
+    while (!stack.empty())
+    {
+        Pos pos = stack.top();
+        stack.pop();
+        
+        int n = layer(pos.cube);
+        int d = pos.scramble.length();
+        
+        if (n > d)
+        {
+            // seen this state at a deeper level, so remove that record
+            // and add a new one at this depth.
+            
+            layers[n].remove(pos.cube, pos.scramble);
+            n = NOT_A_LAYER;
+        }
+        
+        if (n == NOT_A_LAYER)
+        {
+            // not seen this state before (at this depth) so add it.
+            
+            layers[d].add(pos.cube, pos.scramble);
+            
+            // and push following positions onto the stack
+            
+            int last = (d > 0) ? pos.scramble.last().getFace() : -1;
+            
+            for (int f = 0; f < 6; f++)
+            {
+                if (cant_follow(last, f))
+                    continue;
+                    
+                for (int t = 1; t <= 3; t++)
+                {
+                    Cube::Twist twist((Cube::Face)f, t);
+                
+                    Pos new_pos = pos;
+                    new_pos.cube.twist(twist);
+                    new_pos.scramble.add(twist);
+                
+                    stack.push(new_pos);
+                }
+            }
+        }
+    }
+}
+
+template <class LayerType> int Cache<LayerType>::depth() const
+{
+    return layers.size() - 1;
+}
+
+template <class LayerType> int Cache<LayerType>::count(int deep)
+{
+    return layers[deep].size();
+}
+
+template <class LayerType>  
+//  
+bool Cache<LayerType>::contains(const Cube &cube, int deep /* = -1 */) const
+{
+    if (deep < 0)
+    {
+        return (layer(cube) != NOT_A_LAYER);
+    }
+    else
+    {
+        return layers[deep].contains(cube);
+    }
+}
+
+template <class LayerType>
+//    
+int Cache<LayerType>::layer(const Cube &cube) const
+{
+    for (int i = depth(); i >= 0; --i)
+    {
+        if (layers[i].contains(cube))
+        {
+            return layers[i].depth();
+        }
+    }
+    return NOT_A_LAYER;
+}
+
+#endif
