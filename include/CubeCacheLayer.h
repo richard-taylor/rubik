@@ -1,6 +1,6 @@
 
-#ifndef CACHECUBE_H
-#define CACHECUBE_H
+#ifndef CUBECACHELAYER_H
+#define CUBECACHELAYER_H
 
 #include <map>
 #include "Cube.h"
@@ -8,13 +8,13 @@
 
 // implements LayerType for use in a Cache
 
-class CacheCube
+class CubeCacheLayer
 {
 public:
     /**
     Create a layer of a certain depth (number of moves from solved).
     */
-    CacheCube(int deep);
+    CubeCacheLayer(int deep);
     
     /**
     Get the depth of the layer (number of moves from solved).

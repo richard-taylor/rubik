@@ -1,11 +1,11 @@
 
 #include <iostream>
 #include "Cache.h"
-#include "CacheCube.h"
+#include "CubeCacheLayer.h"
 
 int main()
 {
-	Cache<CacheCube> cache(6);
+	Cache<CubeCacheLayer> cache(6);
 
 	for (int i = 0; i <= cache.depth(); i++)
 	{

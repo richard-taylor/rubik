@@ -1,12 +1,12 @@
 
 #include <cassert>
 #include "Cache.h"
-#include "CacheCube.h"
+#include "CubeCacheLayer.h"
 
 int main()
 {
     // construct a Cache of 3 moves
-    Cache<CacheCube> cache(3);
+    Cache<CubeCacheLayer> cache(3);
     assert(cache.depth() == 3);
     
     // count the cubes at each depth
