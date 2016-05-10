@@ -29,6 +29,7 @@ public:
     */
     bool contains(const Cube &cube, int deep = -1) const;
     
+protected:
     /**
     Get the layer that contains a cached state.
     */

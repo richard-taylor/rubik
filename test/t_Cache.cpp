@@ -1,12 +1,11 @@
 
 #include <cassert>
-#include "Cache.h"
-#include "CubeCacheLayer.h"
+#include "CubeCache.h"
 
 int main()
 {
-    // construct a Cache of 3 moves
-    Cache<CubeCacheLayer> cache(3);
+    // construct a cube position cache of 3 moves
+    CubeCache cache(3);
     assert(cache.depth() == 3);
     
     // count the cubes at each depth
@@ -28,7 +27,7 @@ int main()
     assert(!cache.contains(cube, 2));
     
     // the solution to a cube is the inverse of the scramble
-    Scramble solution = cache.get_layer(cube).solution(cube);
+    Scramble solution = cache.solution(cube);
     assert(solution.toString() == "F' U' R'");
     
     // should not find a cube that has 4 turns
