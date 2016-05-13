@@ -1,13 +1,21 @@
 
 #include <iostream>
 #include "CubeCache.h"
+#include "CornersCache.h"
 
 int main()
 {
-	CubeCache cache(6);
+	/*CubeCache cubes(6);
 
-	for (int i = 0; i <= cache.depth(); i++)
+	for (int i = 0; i <= cubes.depth(); i++)
 	{
-	    std::cout << "got " << cache.count(i) << " positions." << std::endl;
+	    std::cout << "got " << cubes.count(i) << " cube positions." << std::endl;
+	}*/
+	
+	CornersCache corners(7);
+	
+	for (int i = 0; i <= corners.depth(); i++)
+	{
+	    std::cout << "got " << corners.count(i) << " corner positions." << std::endl;
 	}
 }

@@ -417,6 +417,16 @@ bool Cube::operator<(const Cube &other) const
     return (memcmp(state, other.state, STATE_SIZE) < 0);
 }
 
+unsigned long long Cube::corner_bits() const
+{
+    return ((unsigned long long)state[0] << 40) |
+           ((unsigned long long)state[1] << 32) |
+           ((unsigned long long)state[2] << 24) |
+           ((unsigned long long)state[3] << 16) | 
+           ((unsigned long long)state[4] <<  8) | 
+           ((unsigned long long)state[5]);
+}
+
 void Cube::debug(const char *label)
 {
     std::cout << label << std::endl;

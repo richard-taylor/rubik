@@ -56,6 +56,16 @@ public:
     */
     bool operator<(const Cube &other) const;
 
+    /**
+    Get a 64-bit binary value representing the state of the cube's corners.
+    
+    The format of the representation should not be relied on. Only that two
+    cubes with the same corner positions and orientations will return the
+    same value; and two cubes with different corner positions or orientations
+    will return different values.
+    */
+    unsigned long long corner_bits() const;
+    
 private:
     static const unsigned char SOLVED_STATE[];
     static const int STATE_SIZE = 14;
