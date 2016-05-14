@@ -5,20 +5,9 @@
 #include <string>
 #include <vector>
 
-/**
-Build a cache with a given basename, up to a maximum depth.
-    
-The layers will have ".1", ".2", ".3" etc appended to the basename.
-    
-If some layers already exist then they will be reused to make the
-later layers.
-
-Returns the total number of layers.
-*/
 template <class LayerType> class CacheBuilder
 {
 public:
-
     /**
     Builder with a given basename.
     

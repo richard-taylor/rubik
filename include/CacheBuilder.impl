@@ -13,7 +13,7 @@
 
 #define SAY(X) if (m_verbose) { std::cout << X << std::endl; }
 
-const int NOT_A_LAYER = -1;
+const Cube::Twist noTwist(Cube::F, 0);
 
 extern bool cant_follow(int last, int next);
 
@@ -74,6 +74,29 @@ template <class LayerType> int CacheBuilder<LayerType>::build_layer(int N)
     else
     {
         SAY("Not found. Building it...");
+        
+        if (N == 0)
+        {
+            // write the layer state to basename.N
+            
+            std::ofstream f1(filename.c_str(), std::ios::out | std::ios::binary);
+
+            LayerType::write_state(f1, Cube());
+            
+            // write the cube state to basename.N.cubes
+            
+            std::string cubefile = append(N, "cubes");
+            
+            std::ofstream f2(cubefile.c_str(), std::ios::out | std::ios::binary);
+            
+            LayerType::write_cube(f2, Cube(), noTwist);
+            
+            // one state in this layer
+            return 1;
+        }
+        else
+        {
+        }
         return 1;
     }
 }

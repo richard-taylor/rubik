@@ -3,10 +3,9 @@
 #include <fstream>
 #include <sstream>
 #include "CornersCacheLayer.h"
-#include "Cube.h"
 
 CornersCacheLayer::CornersCacheLayer(const std::string &basename, int depth)
-: m_depth(depth)
+: CacheLayer(depth)
 {
     std::stringstream filename;
     filename << basename << "." << depth;
@@ -17,17 +16,22 @@ CornersCacheLayer::CornersCacheLayer(const std::string &basename, int depth)
         ifs.seekg(0, std::ios::end);
         
         int nbytes = ifs.tellg();
-        m_vector.reserve(nbytes / sizeof(unsigned long long));
+        int nitems = nbytes / sizeof(unsigned long long);
         
+        m_vector.reserve(nitems);
         ifs.seekg(0, std::ios::beg);
-        ifs.read((char*)&m_vector[0], nbytes);
+        
+        // TODO faster way?
+        
+        unsigned long long value;
+        for (int i = 0; i < nitems; i++)
+        {
+            ifs.read((char*)&value, sizeof(unsigned long long));
+            m_vector.push_back(value);
+        }
+        
         ifs.close();
     }
-}
-
-int CornersCacheLayer::depth() const
-{
-    return m_depth;
 }
 
 int CornersCacheLayer::size() const
@@ -43,4 +47,17 @@ bool CornersCacheLayer::contains(const Cube &cube) const
         std::lower_bound(m_vector.begin(), m_vector.end(), corners);
         
     return (i != m_vector.end() && corners == *i);
+}
+
+void CornersCacheLayer::write_state(std::ostream &out, const Cube &cube)
+{
+    unsigned long long corners = cube.corner_bits();
+    
+    out.write((char*)&corners, sizeof(unsigned long long));
+}
+
+void CornersCacheLayer::write_cube(std::ostream &out, const Cube &cube, const Cube::Twist &twist)
+{
+    out.write((char*)&cube, sizeof(Cube));
+    out.write((char*)&twist, sizeof(Cube::Twist));
 }
