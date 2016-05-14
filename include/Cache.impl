@@ -5,83 +5,22 @@
 // template implementation included by Cache.h
 
 #include <cassert>
-#include <stack>
-
-#include "Cube.h"
-#include "Scramble.h"
 
 const int NOT_A_LAYER = -1;
 
-extern bool cant_follow(int last, int next);
-
-struct Pos
+template <class LayerType> Cache<LayerType>::Cache(const std::string &basename)
 {
-    Cube cube;
-    Scramble scramble;
+    bool done = false;
+    int i = 0;
     
-    Pos(const Cube &a_cube, const Scramble &a_scramble) : cube(a_cube), scramble(a_scramble)
+    while (!done)
     {
-    }
-};
-
-template <class LayerType> Cache<LayerType>::Cache(int deep)
-{
-    for (int i = 0; i <= deep; i++)
-    {
-        layers.push_back(LayerType(i));
-    }
-    
-    std::stack<Pos> stack;
-    
-    stack.push(Pos(Cube(), Scramble()));    // start with a solved cube
-    
-    while (!stack.empty())
-    {
-        Pos pos = stack.top();
-        stack.pop();
+        layers.push_back(LayerType(basename, i));
         
-        int n = layer(pos.cube);
-        int d = pos.scramble.length();
-        
-        if (n > d)
+        if (layers[i].size() == 0)
         {
-            // seen this state at a deeper level, so remove that record
-            // and add a new one at this depth.
-            
-            layers[n].remove(pos.cube, pos.scramble);
-            n = NOT_A_LAYER;
-        }
-        
-        if (n == NOT_A_LAYER)
-        {
-            // not seen this state before (at this depth) so add it.
-            
-            layers[d].add(pos.cube, pos.scramble);
-            
-            // push following positions onto the stack,
-            // unless we are the maximum depth.
-            
-            if (d == deep)
-                continue;
-            
-            int last = (d > 0) ? pos.scramble.last().getFace() : -1;
-            
-            for (int f = 0; f < 6; f++)
-            {
-                if (cant_follow(last, f))
-                    continue;
-                    
-                for (int t = 1; t <= 3; t++)
-                {
-                    Cube::Twist twist((Cube::Face)f, t);
-                
-                    Pos new_pos = pos;
-                    new_pos.cube.twist(twist);
-                    new_pos.scramble.add(twist);
-                
-                    stack.push(new_pos);
-                }
-            }
+            layers.pop_back();    // lose the empty layer
+            done = true;
         }
     }
 }

@@ -1,0 +1,160 @@
+
+#ifndef CACHEBUILDER_IMPL
+#define CACHEBUILDER_IMPL
+
+// template implementation included by CacheBuilder.h
+
+#include <cassert>
+#include <iostream>
+#include <sstream>
+#include <sys/stat.h>
+#include "Cube.h"
+#include "Scramble.h"
+
+#define SAY(X) if (m_verbose) { std::cout << X << std::endl; }
+
+const int NOT_A_LAYER = -1;
+
+extern bool cant_follow(int last, int next);
+
+struct Pos
+{
+    Cube cube;
+    Scramble scramble;
+    
+    Pos(const Cube &a_cube, const Scramble &a_scramble) : cube(a_cube), scramble(a_scramble)
+    {
+    }
+};
+
+template <class LayerType>
+//
+CacheBuilder<LayerType>::CacheBuilder(const std::string &basename)
+: m_basename(basename), m_verbose(false)
+{
+    // TODO check the directory part exists
+}
+
+template <class LayerType> void CacheBuilder<LayerType>::verbose(bool on)
+{
+    m_verbose = on;
+}
+
+template <class LayerType> bool CacheBuilder<LayerType>::verbose() const
+{
+    return m_verbose;
+}
+
+template <class LayerType>
+//
+std::string CacheBuilder<LayerType>::append(int N, std::string suffix)
+{
+    std::stringstream ss;
+    ss << m_basename << "." << N;
+    
+    if (suffix != "")
+    {
+        ss << "." << suffix;
+    }
+    return ss.str();
+}
+
+template <class LayerType> int CacheBuilder<LayerType>::build_layer(int N)
+{
+    std::string filename = append(N);
+    
+    SAY("Looking for cache layer " << filename);
+    
+    struct stat buffer;   
+    if (stat(filename.c_str(), &buffer) == 0)
+    {
+        SAY("Found it.");
+        return 1;
+    }
+    else
+    {
+        SAY("Not found. Building it...");
+        return 1;
+    }
+}
+
+template <class LayerType> void CacheBuilder<LayerType>::build(int deep)
+{
+    for (int i = 0; i <= deep; i++)
+    {
+        // do not reload / rebuild layers we already have
+        
+        if (i == m_layers.size())
+        {
+            // do not add empty layers or try to build more after an empty one
+            
+            if (build_layer(i) > 0)
+            {
+                m_layers.push_back(LayerType(m_basename, i));
+                
+                SAY("Loaded layer " << i << " with " << m_layers[i].size() << " states.");
+            }
+        }
+    }
+    /*for (int i = 0; i <= deep; i++)
+    {
+        layers.push_back(LayerType(i));
+    }
+    
+    std::stack<Pos> stack;
+    
+    stack.push(Pos(Cube(), Scramble()));    // start with a solved cube
+    
+    while (!stack.empty())
+    {
+        Pos pos = stack.top();
+        stack.pop();
+        
+        int n = layer(pos.cube);
+        int d = pos.scramble.length();
+        
+        if (n > d)
+        {
+            // seen this state at a deeper level, so remove that record
+            // and add a new one at this depth.
+            
+            layers[n].remove(pos.cube, pos.scramble);
+            n = NOT_A_LAYER;
+        }
+        
+        if (n == NOT_A_LAYER)
+        {
+            // not seen this state before (at this depth) so add it.
+            
+            layers[d].add(pos.cube, pos.scramble);
+            
+            // push following positions onto the stack,
+            // unless we are the maximum depth.
+            
+            if (d == deep)
+                continue;
+            
+            int last = (d > 0) ? pos.scramble.last().getFace() : -1;
+            
+            for (int f = 0; f < 6; f++)
+            {
+                if (cant_follow(last, f))
+                    continue;
+                    
+                for (int t = 1; t <= 3; t++)
+                {
+                    Cube::Twist twist((Cube::Face)f, t);
+                
+                    Pos new_pos = pos;
+                    new_pos.cube.twist(twist);
+                    new_pos.scramble.add(twist);
+                
+                    stack.push(new_pos);
+                }
+            }
+        }
+    }
+    */
+}
+
+#endif

@@ -2,6 +2,7 @@
 #ifndef CACHE_H
 #define CACHE_H
 
+#include <string>
 #include <vector>
 
 class Cube;
@@ -10,9 +11,11 @@ template <class LayerType> class Cache
 {
 public:
     /**
-    Create a cache of a certain depth (number of moves from solved).
+    Load a cache from a given basename.
+    
+    The layers will have ".1", ".2", ".3" etc appended to the basename.
     */
-    Cache(int deep);
+    Cache(const std::string &basename);
     
     /**
     Get the maximum depth in the cache (number of moves from solved).

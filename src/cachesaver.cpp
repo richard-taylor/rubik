@@ -1,7 +1,7 @@
 
 #include <iostream>
-#include "CubeCache.h"
-#include "CornersCache.h"
+#include "CacheBuilder.h"
+#include "CornersCacheLayer.h"
 
 int main()
 {
@@ -12,10 +12,7 @@ int main()
 	    std::cout << "got " << cubes.count(i) << " cube positions." << std::endl;
 	}*/
 	
-	CornersCache corners(7);
-	
-	for (int i = 0; i <= corners.depth(); i++)
-	{
-	    std::cout << "got " << corners.count(i) << " corner positions." << std::endl;
-	}
+	CacheBuilder<CornersCacheLayer> corners("tmp_corners");
+	corners.verbose(true);
+	corners.build(3);
 }

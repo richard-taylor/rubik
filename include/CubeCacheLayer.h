@@ -3,6 +3,7 @@
 #define CUBECACHELAYER_H
 
 #include <map>
+#include <string>
 #include "Cube.h"
 #include "Scramble.h"
 
@@ -12,9 +13,9 @@ class CubeCacheLayer
 {
 public:
     /**
-    Create a layer of a certain depth (number of moves from solved).
+    Load a layer of a certain depth (number of moves from solved).
     */
-    CubeCacheLayer(int deep);
+    CubeCacheLayer(const std::string &basename, int deep);
     
     /**
     Get the depth of the layer (number of moves from solved).
@@ -25,16 +26,6 @@ public:
     Count the number of states in this layer.
     */
     int size() const;
-    
-    /**
-    Add a new state to this layer (and the scramble to create it).
-    */
-    void add(const Cube &cube, const Scramble &scramble);
-    
-    /**
-    Remove a state from this layer (and the associated scramble).
-    */
-    void remove(const Cube &cube, const Scramble &scramble);
     
     /**
     Test for a cached cube state in this layer.

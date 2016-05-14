@@ -1,9 +1,28 @@
 
 #include <cassert>
+#include <fstream>
+#include <sstream>
 #include "CornersCacheLayer.h"
+#include "Cube.h"
 
-CornersCacheLayer::CornersCacheLayer(int depth) : m_depth(depth)
+CornersCacheLayer::CornersCacheLayer(const std::string &basename, int depth)
+: m_depth(depth)
 {
+    std::stringstream filename;
+    filename << basename << "." << depth;
+    
+    std::ifstream ifs(filename.str().c_str(), std::ios::in | std::ios::binary);
+    if (ifs)
+    {
+        ifs.seekg(0, std::ios::end);
+        
+        int nbytes = ifs.tellg();
+        m_vector.reserve(nbytes / sizeof(unsigned long long));
+        
+        ifs.seekg(0, std::ios::beg);
+        ifs.read((char*)&m_vector[0], nbytes);
+        ifs.close();
+    }
 }
 
 int CornersCacheLayer::depth() const
@@ -14,28 +33,6 @@ int CornersCacheLayer::depth() const
 int CornersCacheLayer::size() const
 {
     return m_vector.size();
-}
-
-void CornersCacheLayer::add(const Cube &cube, const Scramble &scramble)
-{
-    unsigned long long corners = cube.corner_bits();
-    
-    std::vector<unsigned long long>::iterator i =
-        std::lower_bound(m_vector.begin(), m_vector.end(), corners);
-        
-    if (i == m_vector.end() || corners < *i)
-        m_vector.insert(i, corners);
-}
-   
-void CornersCacheLayer::remove(const Cube &cube, const Scramble &scramble)
-{
-    unsigned long long corners = cube.corner_bits();
-    
-    std::vector<unsigned long long>::iterator i =
-        std::lower_bound(m_vector.begin(), m_vector.end(), corners);
-        
-    if (i != m_vector.end() && corners == *i)
-        m_vector.erase(i);
 }
 
 bool CornersCacheLayer::contains(const Cube &cube) const

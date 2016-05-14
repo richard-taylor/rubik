@@ -11,7 +11,7 @@ public:
     /**
     Create a cache of a certain depth (number of moves from solved).
     */
-    CubeCache(int deep) : Cache<CubeCacheLayer>(deep) {}
+    CubeCache(const std::string &basename) : Cache<CubeCacheLayer>(basename) {}
     
     /**
     Retrieve the solution for a given cube state.
