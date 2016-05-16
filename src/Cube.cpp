@@ -144,7 +144,12 @@ Cube::Twist Cube::Twist::inverse() const
 {
     return Cube::Twist(getFace(), 4 - getTurns());
 }
-        
+
+bool Cube::Twist::operator==(const Cube::Twist &other) const
+{
+    return (twist == other.twist);
+}
+       
 const byte Cube::SOLVED_STATE[] = {3, 32, 64, 99, 130, 160, 1, 35, 69, 103, 137, 171, 0, 0};
 
 enum Corner { RUF, LUF, LUB, RUB, RDF, LDF, LDB, RDB };

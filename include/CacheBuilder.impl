@@ -6,6 +6,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <sys/stat.h>
 #include "Cube.h"
@@ -16,16 +17,6 @@
 const Cube::Twist noTwist(Cube::F, 0);
 
 extern bool cant_follow(int last, int next);
-
-struct Pos
-{
-    Cube cube;
-    Scramble scramble;
-    
-    Pos(const Cube &a_cube, const Scramble &a_scramble) : cube(a_cube), scramble(a_scramble)
-    {
-    }
-};
 
 template <class LayerType>
 //
@@ -47,7 +38,7 @@ template <class LayerType> bool CacheBuilder<LayerType>::verbose() const
 
 template <class LayerType>
 //
-std::string CacheBuilder<LayerType>::append(int N, std::string suffix)
+std::string CacheBuilder<LayerType>::append(int N, const std::string &suffix)
 {
     std::stringstream ss;
     ss << m_basename << "." << N;
@@ -59,9 +50,52 @@ std::string CacheBuilder<LayerType>::append(int N, std::string suffix)
     return ss.str();
 }
 
+template <class LayerType>
+//
+std::string CacheBuilder<LayerType>::cubefile(int N)
+{
+    return append(N, "cubes");
+}
+
+template <class LayerType>
+//
+int CacheBuilder<LayerType>::build_layer(int N, const std::string &statefile)
+{
+    // iterate over the set of cubes from the previous layer
+    
+    std::ifstream cubes(cubefile(N - 1).c_str(), std::ios::binary);
+    
+    Cube cube;
+    Cube::Twist twist = noTwist;
+    
+    while (LayerType::read_cube(cubes, cube, twist))
+    {
+        SAY("read a cube state!");
+        
+        int lastFace = (twist == noTwist) ? -1 : twist.getFace();
+            
+        for (int f = 0; f < 6; f++)
+        {
+            if (cant_follow(lastFace, f))
+                continue;
+                    
+            for (int t = 1; t <= 3; t++)
+            {
+                Cube::Twist next_twist((Cube::Face)f, t);
+                
+                Cube next_cube = cube;
+                next_cube.twist(next_twist);
+                
+                SAY("    trying a new cube");
+            }
+        }
+    }
+    return 1;
+}
+
 template <class LayerType> int CacheBuilder<LayerType>::build_layer(int N)
 {
-    std::string filename = append(N);
+    std::string filename = append(N, "");
     
     SAY("Looking for cache layer " << filename);
     
@@ -79,15 +113,13 @@ template <class LayerType> int CacheBuilder<LayerType>::build_layer(int N)
         {
             // write the layer state to basename.N
             
-            std::ofstream f1(filename.c_str(), std::ios::out | std::ios::binary);
+            std::ofstream f1(filename.c_str(), std::ios::binary);
 
             LayerType::write_state(f1, Cube());
             
-            // write the cube state to basename.N.cubes
+            // write the cube states to basename.N.cubes  
             
-            std::string cubefile = append(N, "cubes");
-            
-            std::ofstream f2(cubefile.c_str(), std::ios::out | std::ios::binary);
+            std::ofstream f2(cubefile(N).c_str(), std::ios::binary);
             
             LayerType::write_cube(f2, Cube(), noTwist);
             
@@ -96,8 +128,8 @@ template <class LayerType> int CacheBuilder<LayerType>::build_layer(int N)
         }
         else
         {
+            return build_layer(N, filename);
         }
-        return 1;
     }
 }
 
@@ -119,65 +151,6 @@ template <class LayerType> void CacheBuilder<LayerType>::build(int deep)
             }
         }
     }
-    /*for (int i = 0; i <= deep; i++)
-    {
-        layers.push_back(LayerType(i));
-    }
-    
-    std::stack<Pos> stack;
-    
-    stack.push(Pos(Cube(), Scramble()));    // start with a solved cube
-    
-    while (!stack.empty())
-    {
-        Pos pos = stack.top();
-        stack.pop();
-        
-        int n = layer(pos.cube);
-        int d = pos.scramble.length();
-        
-        if (n > d)
-        {
-            // seen this state at a deeper level, so remove that record
-            // and add a new one at this depth.
-            
-            layers[n].remove(pos.cube, pos.scramble);
-            n = NOT_A_LAYER;
-        }
-        
-        if (n == NOT_A_LAYER)
-        {
-            // not seen this state before (at this depth) so add it.
-            
-            layers[d].add(pos.cube, pos.scramble);
-            
-            // push following positions onto the stack,
-            // unless we are the maximum depth.
-            
-            if (d == deep)
-                continue;
-            
-            int last = (d > 0) ? pos.scramble.last().getFace() : -1;
-            
-            for (int f = 0; f < 6; f++)
-            {
-                if (cant_follow(last, f))
-                    continue;
-                    
-                for (int t = 1; t <= 3; t++)
-                {
-                    Cube::Twist twist((Cube::Face)f, t);
-                
-                    Pos new_pos = pos;
-                    new_pos.cube.twist(twist);
-                    new_pos.scramble.add(twist);
-                
-                    stack.push(new_pos);
-                }
-            }
-        }
-    }
-    */
 }
 
 #endif

@@ -32,9 +32,14 @@ public:
     static void write_state(std::ostream &out, const Cube &cube);
     
     /**
+    Read a cube and its last twist from a binary stream.
+    */
+    static bool read_cube(std::istream &in, Cube &cube, Cube::Twist &twist);
+    
+    /**
     Write a cube and its last twist to a binary stream.
     */
-    static void write_cube(std::ostream &out, const Cube &cube, const Cube::Twist &twist);
+    static bool write_cube(std::ostream &out, const Cube &cube, const Cube::Twist &twist);
     
 private:
     std::vector<unsigned long long> m_vector;

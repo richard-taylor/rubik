@@ -2,10 +2,10 @@
 #ifndef CACHELAYER_H
 #define CACHELAYER_H
 
+#include <fstream>
 #include <string>
 #include <vector>
-
-class Cube;
+#include "Cube.h"
 
 // abstract base class for LayerType to use in a Cache
 
@@ -32,6 +32,10 @@ public:
     */
     virtual bool contains(const Cube &cube) const = 0;
         
+protected:
+    static bool read_cube(std::istream &in, Cube &cube, Cube::Twist &twist);
+    static bool write_cube(std::ostream &out, const Cube &cube, const Cube::Twist &twist);
+    
 private:
     int m_depth;
 };

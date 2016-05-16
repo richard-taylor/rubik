@@ -10,7 +10,7 @@ CornersCacheLayer::CornersCacheLayer(const std::string &basename, int depth)
     std::stringstream filename;
     filename << basename << "." << depth;
     
-    std::ifstream ifs(filename.str().c_str(), std::ios::in | std::ios::binary);
+    std::ifstream ifs(filename.str().c_str(), std::ios::binary);
     if (ifs)
     {
         ifs.seekg(0, std::ios::end);
@@ -56,8 +56,12 @@ void CornersCacheLayer::write_state(std::ostream &out, const Cube &cube)
     out.write((char*)&corners, sizeof(unsigned long long));
 }
 
-void CornersCacheLayer::write_cube(std::ostream &out, const Cube &cube, const Cube::Twist &twist)
+bool CornersCacheLayer::read_cube(std::istream &in, Cube &cube, Cube::Twist &twist)
 {
-    out.write((char*)&cube, sizeof(Cube));
-    out.write((char*)&twist, sizeof(Cube::Twist));
+    return CacheLayer::read_cube(in, cube, twist);
+}
+
+bool CornersCacheLayer::write_cube(std::ostream &out, const Cube &cube, const Cube::Twist &twist)
+{
+    return CacheLayer::write_cube(out, cube, twist);
 }

@@ -21,6 +21,7 @@ public:
         int getTurns() const;
         
         Twist inverse() const;
+        bool operator==(const Twist &other) const;
         
     private:
         unsigned char twist;

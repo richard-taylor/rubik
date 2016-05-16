@@ -39,8 +39,12 @@ private:
     bool m_verbose;
     std::vector<LayerType> m_layers;
     
-    std::string append(int N, std::string suffix = "");
+    std::string append(int N, const std::string &suffix);
+    std::string cubefile(int N);
+    std::string statefile(int N);
+    
     int build_layer(int N);
+    int build_layer(int N, const std::string &statefile);
 };
     
 #include "CacheBuilder.impl"
