@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+class Cube;
+
 template <class LayerType> class CacheBuilder
 {
 public:
@@ -41,10 +43,11 @@ private:
     
     std::string append(int N, const std::string &suffix);
     std::string cubefile(int N);
-    std::string statefile(int N);
     
     int build_layer(int N);
     int build_layer(int N, const std::string &statefile);
+    
+    bool seen_before(const Cube &cube);
 };
     
 #include "CacheBuilder.impl"

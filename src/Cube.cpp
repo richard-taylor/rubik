@@ -124,6 +124,11 @@ void unpack(byte *packed, byte *unpacked)
     unpacked[19] = ((packed[11] & B3210) << 4) | ((packed[13] & B4) >> 4);
 }
 
+Cube::Twist::Twist()
+{
+    twist = 0;
+}
+
 Cube::Twist::Twist(Face face, int turns)
 {
     assert(turns > 0 && turns < 4);

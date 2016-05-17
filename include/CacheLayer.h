@@ -36,6 +36,8 @@ protected:
     static bool read_cube(std::istream &in, Cube &cube, Cube::Twist &twist);
     static bool write_cube(std::ostream &out, const Cube &cube, const Cube::Twist &twist);
     
+    static int squash_cubes(const std::string &cube_max, const std::string &cubefile);
+    
 private:
     int m_depth;
 };

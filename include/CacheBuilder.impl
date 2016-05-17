@@ -14,7 +14,7 @@
 
 #define SAY(X) if (m_verbose) { std::cout << X << std::endl; }
 
-const Cube::Twist noTwist(Cube::F, 0);
+const Cube::Twist noTwist;
 
 extern bool cant_follow(int last, int next);
 
@@ -59,8 +59,31 @@ std::string CacheBuilder<LayerType>::cubefile(int N)
 
 template <class LayerType>
 //
+bool CacheBuilder<LayerType>::seen_before(const Cube &cube)
+{
+    for (int i = m_layers.size() - 1; i >= 0; --i)
+    {
+        if (m_layers[i].contains(cube))
+            return true;
+    }
+    return false;
+}
+
+template <class LayerType>
+//
 int CacheBuilder<LayerType>::build_layer(int N, const std::string &statefile)
 {
+    // first create the new state list with possible duplicates
+    
+    std::string state_max = append(N, "tmp.state");
+    std::string cubes_max = append(N, "tmp.cubes");
+    
+    std::ofstream smax(state_max.c_str(), std::ios::binary);
+    std::ofstream cmax(cubes_max.c_str(), std::ios::binary);
+    
+    int considered = 0;
+    int forwarded = 0;
+    
     // iterate over the set of cubes from the previous layer
     
     std::ifstream cubes(cubefile(N - 1).c_str(), std::ios::binary);
@@ -70,8 +93,6 @@ int CacheBuilder<LayerType>::build_layer(int N, const std::string &statefile)
     
     while (LayerType::read_cube(cubes, cube, twist))
     {
-        SAY("read a cube state!");
-        
         int lastFace = (twist == noTwist) ? -1 : twist.getFace();
             
         for (int f = 0; f < 6; f++)
@@ -86,11 +107,33 @@ int CacheBuilder<LayerType>::build_layer(int N, const std::string &statefile)
                 Cube next_cube = cube;
                 next_cube.twist(next_twist);
                 
-                SAY("    trying a new cube");
+                ++considered;
+                
+                if (!seen_before(next_cube))
+                {
+                    ++forwarded;
+                    
+                    LayerType::write_state(smax, next_cube);
+                    LayerType::write_cube(cmax, next_cube, next_twist);
+                }
             }
         }
     }
-    return 1;
+    SAY("New states (including duplicates) " << forwarded << " / " << considered);
+
+    smax.close();
+    cmax.close();
+        
+    SAY("Removing duplicate states...");
+    int remaining = LayerType::squash_states(state_max, statefile);
+    SAY("Unique states found " << remaining);
+    
+    SAY("Removing duplicate cubes...");
+    int check = LayerType::squash_cubes(cubes_max, cubefile(N));
+    SAY("Unique cubes found " << check);
+    
+    assert(remaining == check);
+    return remaining;
 }
 
 template <class LayerType> int CacheBuilder<LayerType>::build_layer(int N)

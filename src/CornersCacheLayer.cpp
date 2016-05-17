@@ -1,16 +1,13 @@
 
+#include <algorithm>
 #include <cassert>
 #include <fstream>
 #include <sstream>
 #include "CornersCacheLayer.h"
 
-CornersCacheLayer::CornersCacheLayer(const std::string &basename, int depth)
-: CacheLayer(depth)
+void load_states(const std::string &filename, std::vector<unsigned long long> &states)
 {
-    std::stringstream filename;
-    filename << basename << "." << depth;
-    
-    std::ifstream ifs(filename.str().c_str(), std::ios::binary);
+    std::ifstream ifs(filename.c_str(), std::ios::binary);
     if (ifs)
     {
         ifs.seekg(0, std::ios::end);
@@ -18,7 +15,7 @@ CornersCacheLayer::CornersCacheLayer(const std::string &basename, int depth)
         int nbytes = ifs.tellg();
         int nitems = nbytes / sizeof(unsigned long long);
         
-        m_vector.reserve(nitems);
+        states.reserve(nitems);
         ifs.seekg(0, std::ios::beg);
         
         // TODO faster way?
@@ -27,11 +24,20 @@ CornersCacheLayer::CornersCacheLayer(const std::string &basename, int depth)
         for (int i = 0; i < nitems; i++)
         {
             ifs.read((char*)&value, sizeof(unsigned long long));
-            m_vector.push_back(value);
+            states.push_back(value);
         }
         
         ifs.close();
     }
+}
+
+CornersCacheLayer::CornersCacheLayer(const std::string &basename, int depth)
+: CacheLayer(depth)
+{
+    std::stringstream filename;
+    filename << basename << "." << depth;
+    
+    load_states(filename.str(), m_vector);
 }
 
 int CornersCacheLayer::size() const
@@ -64,4 +70,39 @@ bool CornersCacheLayer::read_cube(std::istream &in, Cube &cube, Cube::Twist &twi
 bool CornersCacheLayer::write_cube(std::ostream &out, const Cube &cube, const Cube::Twist &twist)
 {
     return CacheLayer::write_cube(out, cube, twist);
+}
+
+int CornersCacheLayer::squash_states(const std::string &state_max, const std::string &statefile)
+{
+    std::vector<unsigned long long> dupes;
+    load_states(state_max, dupes);
+    
+    std::sort(dupes.begin(), dupes.end());
+ 
+    int written = 0;
+       
+    std::ofstream out(statefile.c_str(), std::ios::binary);
+    if (out)
+    {
+        unsigned long long previous = 0;
+        
+        for (int i = 0; i < dupes.size(); ++i)
+        {
+            unsigned long long value = dupes[i];
+            
+            if (i == 0 || value != previous)
+            {
+                out.write((char*)&value, sizeof(unsigned long long));
+                previous = value;
+                ++written;
+            }
+        }
+        out.close();
+    }
+    return written;
+}
+
+int CornersCacheLayer::squash_cubes(const std::string &cube_max, const std::string &cubefile)
+{
+    return CacheLayer::squash_cubes(cube_max, cubefile);
 }

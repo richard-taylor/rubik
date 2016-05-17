@@ -15,6 +15,7 @@ public:
     class Twist
     {
     public:
+        Twist();
         Twist(Face face, int turns);
         
         Face getFace() const;
