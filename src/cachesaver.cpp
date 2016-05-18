@@ -12,7 +12,7 @@ int main()
 	    std::cout << "got " << cubes.count(i) << " cube positions." << std::endl;
 	}*/
 	
-	CacheBuilder<CornersCacheLayer> corners("tmp_corners");
+	CacheBuilder<CornersCacheLayer> corners("cache/tmp_corners");
 	corners.verbose(true);
 	corners.build(11);
 }

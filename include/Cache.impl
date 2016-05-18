@@ -22,6 +22,7 @@ template <class LayerType> Cache<LayerType>::Cache(const std::string &basename)
             layers.pop_back();    // lose the empty layer
             done = true;
         }
+        ++i;
     }
 }
 
