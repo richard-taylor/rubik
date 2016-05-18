@@ -76,10 +76,8 @@ int CacheBuilder<LayerType>::build_layer(int N, const std::string &statefile)
     // first create the new state list with possible duplicates
     
     std::string state_max = append(N, "tmp.state");
-    std::string cubes_max = append(N, "tmp.cubes");
     
     std::ofstream smax(state_max.c_str(), std::ios::binary);
-    std::ofstream cmax(cubes_max.c_str(), std::ios::binary);
     
     int considered = 0;
     int forwarded = 0;
@@ -113,8 +111,7 @@ int CacheBuilder<LayerType>::build_layer(int N, const std::string &statefile)
                 {
                     ++forwarded;
                     
-                    LayerType::write_state(smax, next_cube);
-                    LayerType::write_cube(cmax, next_cube, next_twist);
+                    LayerType::write_cube(smax, next_cube, next_twist);
                 }
             }
         }
@@ -122,17 +119,11 @@ int CacheBuilder<LayerType>::build_layer(int N, const std::string &statefile)
     SAY("New states (including duplicates) " << forwarded << " / " << considered);
 
     smax.close();
-    cmax.close();
         
     SAY("Removing duplicate states...");
-    int remaining = LayerType::squash_states(state_max, statefile);
+    int remaining = LayerType::squash_states(state_max, statefile, cubefile(N));
     SAY("Unique states found " << remaining);
     
-    SAY("Removing duplicate cubes...");
-    int check = LayerType::squash_cubes(cubes_max, cubefile(N));
-    SAY("Unique cubes found " << check);
-    
-    assert(remaining == check);
     return remaining;
 }
 

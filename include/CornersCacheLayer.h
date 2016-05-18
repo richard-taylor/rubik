@@ -41,8 +41,7 @@ public:
     */
     static bool write_cube(std::ostream &out, const Cube &cube, const Cube::Twist &twist);
     
-    static int squash_states(const std::string &state_max, const std::string &statefile);
-    static int squash_cubes(const std::string &cube_max, const std::string &cubefile);
+    static int squash_states(const std::string &state_max, const std::string &statefile, const std::string &cubefile);
     
 private:
     std::vector<unsigned long long> m_vector;

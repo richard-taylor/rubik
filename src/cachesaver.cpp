@@ -14,5 +14,5 @@ int main()
 	
 	CacheBuilder<CornersCacheLayer> corners("tmp_corners");
 	corners.verbose(true);
-	corners.build(3);
+	corners.build(11);
 }
