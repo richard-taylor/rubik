@@ -26,22 +26,32 @@ public:
     */
     bool contains(const Cube &cube) const;
     
-    /**
-    Write a cube state to a binary stream.
-    */
-    static void write_state(std::ostream &out, const Cube &cube);
+    // stuff for the CacheBuilder
     
-    /**
-    Read a cube and its last twist from a binary stream.
-    */
-    static bool read_cube(std::istream &in, Cube &cube, Cube::Twist &twist);
+    class Position
+    {
+    public:
+        Cube cube() const;
+        Cube::Twist lastTwist() const;
+        
+        bool operator<(const Position &other) const;
+
+    private:
+        Cube m_cube;
+        Cube::Twist m_twist;
     
-    /**
-    Write a cube and its last twist to a binary stream.
-    */
-    static bool write_cube(std::ostream &out, const Cube &cube, const Cube::Twist &twist);
+        friend class CornersCacheLayer;
+    };
     
-    static int squash_states(const std::string &state_max, const std::string &statefile, const std::string &cubefile);
+    static bool write_corners(std::ostream &out, unsigned long long corners);
+    
+    static bool exists(const std::string &basename, int deep);
+    static int make_first_layer(const std::string &basename);
+    static std::string temp_file(const std::string &basename, int deep);
+    static std::string cube_file(const std::string &basename, int deep);
+    static bool read_position(std::istream &in, Position &position);
+    static bool write_position(std::ostream &out, const Position &position, const Cube &next_cube, const Cube::Twist &next_twist);
+    static int squash_temp(const std::string &basename, int deep);
     
 private:
     std::vector<unsigned long long> m_vector;

@@ -41,11 +41,8 @@ private:
     bool m_verbose;
     std::vector<LayerType> m_layers;
     
-    std::string append(int N, const std::string &suffix);
-    std::string cubefile(int N);
-    
+    int new_layer(int N);
     int build_layer(int N);
-    int build_layer(int N, const std::string &statefile);
     
     bool seen_before(const Cube &cube);
 };

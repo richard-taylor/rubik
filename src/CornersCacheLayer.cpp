@@ -55,55 +55,97 @@ bool CornersCacheLayer::contains(const Cube &cube) const
     return (i != m_vector.end() && corners == *i);
 }
 
-void CornersCacheLayer::write_state(std::ostream &out, const Cube &cube)
+// stuff for CacheBuilder
+
+bool CornersCacheLayer::write_corners(std::ostream &out, unsigned long long corners)
 {
-    unsigned long long corners = cube.corner_bits();
-    
     out.write((char*)&corners, sizeof(unsigned long long));
-}
-
-bool CornersCacheLayer::read_cube(std::istream &in, Cube &cube, Cube::Twist &twist)
-{
-    return CacheLayer::read_cube(in, cube, twist);
-}
-
-bool CornersCacheLayer::write_cube(std::ostream &out, const Cube &cube, const Cube::Twist &twist)
-{
-    return CacheLayer::write_cube(out, cube, twist);
-}
-
-struct Position
-{
-    Cube cube;
-    Cube::Twist twist;
     
-    bool operator<(const Position &other) const
-    {
-        return (cube.corner_bits() < other.cube.corner_bits());
-    }
-};
+    return out.good();
+}
 
-int CornersCacheLayer::squash_states(const std::string &state_max, const std::string &statefile, const std::string &cubefile)
+Cube CornersCacheLayer::Position::cube() const
 {
-    std::vector<Position> dupes;
+    return m_cube;
+}
+
+Cube::Twist CornersCacheLayer::Position::lastTwist() const
+{
+    return m_twist;
+}
+
+bool CornersCacheLayer::Position::operator<(const Position &other) const
+{
+    return (m_cube < other.m_cube);
+}
+
+bool CornersCacheLayer::exists(const std::string &basename, int deep)
+{
+    return CacheLayer::exists(basename, deep);
+}
+
+int CornersCacheLayer::make_first_layer(const std::string &basename)
+{
+    std::ofstream lout(default_name(basename, 0).c_str(), std::ios::binary);
+    std::ofstream cout(cube_file(basename, 0).c_str(), std::ios::binary);
+
+    unsigned long long corners = Cube().corner_bits();
     
-    std::ifstream in(state_max.c_str(), std::ios::binary);
+    if (lout && write_corners(lout, Cube().corner_bits()) &&
+        cout && write_cube(cout, Cube()) && write_twist(cout, Cube::Twist()))
+        return 1;
+            
+    return 0;
+}
+
+std::string CornersCacheLayer::temp_file(const std::string &basename, int deep)
+{
+    return join(basename, deep, "temp");
+}
+
+std::string CornersCacheLayer::cube_file(const std::string &basename, int deep)
+{
+    return join(basename, deep, "cube");
+}
+
+bool CornersCacheLayer::read_position(std::istream &in, CornersCacheLayer::Position &position)
+{
+    read_cube(in, position.m_cube);
+    read_twist(in, position.m_twist);
+    
+    return !in.eof() && in.good();
+}
+
+bool CornersCacheLayer::write_position(std::ostream &out,
+                                       const CornersCacheLayer::Position &position,
+                                       const Cube &next_cube,
+                                       const Cube::Twist &next_twist)
+{
+    write_cube(out, next_cube);
+    write_twist(out, next_twist);
+}
+
+int CornersCacheLayer::squash_temp(const std::string &basename, int deep)
+{
+    std::vector<CornersCacheLayer::Position> dupes;
+    
+    std::ifstream in(temp_file(basename, deep).c_str(), std::ios::binary);
     if (in)
     {
         in.seekg(0, std::ios::end);
         
         int nbytes = in.tellg();
-        int nitems = nbytes / sizeof(Position);
+        int nitems = nbytes / sizeof(CornersCacheLayer::Position);
         
         dupes.reserve(nitems);
         in.seekg(0, std::ios::beg);
         
         // TODO faster way?
         
-        Position value;
+        CornersCacheLayer::Position value;
         for (int i = 0; i < nitems; i++)
         {
-            in.read((char*)&value, sizeof(Position));
+            in.read((char*)&value, sizeof(CornersCacheLayer::Position));
             dupes.push_back(value);
         }
         
@@ -114,21 +156,21 @@ int CornersCacheLayer::squash_states(const std::string &state_max, const std::st
  
     int written = 0;
        
-    std::ofstream ocube(cubefile.c_str(), std::ios::binary);
+    std::ofstream ocube(cube_file(basename, deep).c_str(), std::ios::binary);
     if (ocube)
     {
-        std::ofstream ostate(statefile.c_str(), std::ios::binary);
+        std::ofstream ostate(default_name(basename, deep).c_str(), std::ios::binary);
         if (ostate)
         {
             unsigned long long previous = 0;
         
             for (int i = 0; i < dupes.size(); ++i)
             {
-                unsigned long long value = dupes[i].cube.corner_bits();
+                unsigned long long value = dupes[i].m_cube.corner_bits();
                 
                 if (i == 0 || value != previous)
                 {
-                    ocube.write((char*)&dupes[i], sizeof(Position));
+                    ocube.write((char*)&dupes[i], sizeof(CornersCacheLayer::Position));
                     ostate.write((char*)&value, sizeof(unsigned long long));
                     previous = value;
                     ++written;

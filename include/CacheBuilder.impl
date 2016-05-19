@@ -8,7 +8,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <sys/stat.h>
 #include "Cube.h"
 #include "Scramble.h"
 
@@ -38,27 +37,6 @@ template <class LayerType> bool CacheBuilder<LayerType>::verbose() const
 
 template <class LayerType>
 //
-std::string CacheBuilder<LayerType>::append(int N, const std::string &suffix)
-{
-    std::stringstream ss;
-    ss << m_basename << "." << N;
-    
-    if (suffix != "")
-    {
-        ss << "." << suffix;
-    }
-    return ss.str();
-}
-
-template <class LayerType>
-//
-std::string CacheBuilder<LayerType>::cubefile(int N)
-{
-    return append(N, "cubes");
-}
-
-template <class LayerType>
-//
 bool CacheBuilder<LayerType>::seen_before(const Cube &cube)
 {
     for (int i = m_layers.size() - 1; i >= 0; --i)
@@ -71,26 +49,25 @@ bool CacheBuilder<LayerType>::seen_before(const Cube &cube)
 
 template <class LayerType>
 //
-int CacheBuilder<LayerType>::build_layer(int N, const std::string &statefile)
+int CacheBuilder<LayerType>::new_layer(int N)
 {
     // first create the new state list with possible duplicates
     
-    std::string state_max = append(N, "tmp.state");
-    
-    std::ofstream smax(state_max.c_str(), std::ios::binary);
+    std::ofstream temp(LayerType::temp_file(m_basename, N).c_str(), std::ios::binary);
     
     int considered = 0;
     int forwarded = 0;
     
     // iterate over the set of cubes from the previous layer
     
-    std::ifstream cubes(cubefile(N - 1).c_str(), std::ios::binary);
+    std::ifstream cubes(LayerType::cube_file(m_basename, N - 1).c_str(), std::ios::binary);
     
-    Cube cube;
-    Cube::Twist twist = noTwist;
+    typename LayerType::Position position;
     
-    while (LayerType::read_cube(cubes, cube, twist))
+    while (LayerType::read_position(cubes, position))
     {
+        Cube::Twist twist = position.lastTwist();
+        
         int lastFace = (twist == noTwist) ? -1 : twist.getFace();
             
         for (int f = 0; f < 6; f++)
@@ -102,7 +79,7 @@ int CacheBuilder<LayerType>::build_layer(int N, const std::string &statefile)
             {
                 Cube::Twist next_twist((Cube::Face)f, t);
                 
-                Cube next_cube = cube;
+                Cube next_cube = position.cube();
                 next_cube.twist(next_twist);
                 
                 ++considered;
@@ -111,17 +88,17 @@ int CacheBuilder<LayerType>::build_layer(int N, const std::string &statefile)
                 {
                     ++forwarded;
                     
-                    LayerType::write_cube(smax, next_cube, next_twist);
+                    LayerType::write_position(temp, position, next_cube, next_twist);
                 }
             }
         }
     }
     SAY("New states (including duplicates) " << forwarded << " / " << considered);
 
-    smax.close();
+    temp.close();
         
     SAY("Removing duplicate states...");
-    int remaining = LayerType::squash_states(state_max, statefile, cubefile(N));
+    int remaining = LayerType::squash_temp(m_basename, N);
     SAY("Unique states found " << remaining);
     
     return remaining;
@@ -129,12 +106,9 @@ int CacheBuilder<LayerType>::build_layer(int N, const std::string &statefile)
 
 template <class LayerType> int CacheBuilder<LayerType>::build_layer(int N)
 {
-    std::string filename = append(N, "");
+    SAY("Looking for cache layer " << N);
     
-    SAY("Looking for cache layer " << filename);
-    
-    struct stat buffer;   
-    if (stat(filename.c_str(), &buffer) == 0)
+    if (LayerType::exists(m_basename, N))
     {
         SAY("Found it.");
         return 1;
@@ -145,24 +119,11 @@ template <class LayerType> int CacheBuilder<LayerType>::build_layer(int N)
         
         if (N == 0)
         {
-            // write the layer state to basename.N
-            
-            std::ofstream f1(filename.c_str(), std::ios::binary);
-
-            LayerType::write_state(f1, Cube());
-            
-            // write the cube states to basename.N.cubes  
-            
-            std::ofstream f2(cubefile(N).c_str(), std::ios::binary);
-            
-            LayerType::write_cube(f2, Cube(), noTwist);
-            
-            // one state in this layer
-            return 1;
+            return LayerType::make_first_layer(m_basename);
         }
         else
         {
-            return build_layer(N, filename);
+            return new_layer(N);
         }
     }
 }

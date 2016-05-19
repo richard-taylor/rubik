@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "Cube.h"
+#include "Scramble.h"
 
 // abstract base class for LayerType to use in a Cache
 
@@ -33,8 +34,20 @@ public:
     virtual bool contains(const Cube &cube) const = 0;
         
 protected:
-    static bool read_cube(std::istream &in, Cube &cube, Cube::Twist &twist);
-    static bool write_cube(std::ostream &out, const Cube &cube, const Cube::Twist &twist);
+    // stuff for CacheBuilder
+    
+    static std::string join(const std::string &basename, int N, const std::string &suffix);
+    static std::string default_name(const std::string &basename, int deep);
+    static bool exists(const std::string &basename, int deep);
+
+    static bool read_cube(std::istream &in, Cube &cube);
+    static bool write_cube(std::ostream &out, const Cube &cube);
+    
+    static bool read_twist(std::istream &in, Cube::Twist &twist);
+    static bool write_twist(std::ostream &out, const Cube::Twist &twist);
+    
+    static bool read_scramble(std::istream &in, Scramble &cube);
+    static bool write_scramble(std::ostream &out, const Scramble &scramble);
     
 private:
     int m_depth;
