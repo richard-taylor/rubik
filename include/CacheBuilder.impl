@@ -64,10 +64,10 @@ int CacheBuilder<LayerType>::new_layer(int N)
     
     typename LayerType::Position position;
     
-    while (LayerType::read_position(cubes, position))
+    while (LayerType::read_position(cubes, position, N - 1))
     {
         Cube::Twist twist = position.lastTwist();
-        
+
         int lastFace = (twist == noTwist) ? -1 : twist.getFace();
             
         for (int f = 0; f < 6; f++)

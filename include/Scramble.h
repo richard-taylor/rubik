@@ -2,6 +2,7 @@
 #ifndef SCRAMBLE_H
 #define SCRAMBLE_H
 
+#include <fstream>
 #include <string>
 #include <vector>
 #include "Cube.h"
@@ -58,6 +59,9 @@ public:
     Return a string representation of the scramble.
     */
     std::string toString() const;
+    
+    bool read(std::istream &in, int length);
+    bool write(std::ostream &out) const;
     
 private:
     std::vector<Cube::Twist> twists;

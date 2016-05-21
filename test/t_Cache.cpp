@@ -1,20 +1,36 @@
 
 #include <cassert>
+#include <cstdlib>
+#include <sstream>
+#include <string>
 #include "CubeCache.h"
 #include "CubeCacheLayer.h"
 #include "CornersCache.h"
 #include "CornersCacheLayer.h"
 #include "CacheBuilder.h"
 
+std::string random_basename()
+{
+    std::stringstream ss;
+    ss << "/tmp/t_cache-";
+    for (int i = 0; i < 8; i++)
+    {
+        ss << char('a' + (rand() % 26));
+    }
+    return ss.str();
+}
+
 void test_cube_cache()
 {
+    std::string basename = random_basename();
+    
     // construct a cube position cache of 3 moves
-    CacheBuilder<CubeCacheLayer> cubes("/tmp/cubes");
-	cubes.verbose(true);
+    CacheBuilder<CubeCacheLayer> cubes(basename);
+	cubes.verbose(false);
 	cubes.build(3);
     
     // load the cache
-    CubeCache cache("/tmp/cubes");
+    CubeCache cache(basename);
     assert(cache.depth() == 3);
     
     // count the cubes at each depth
@@ -49,13 +65,15 @@ void test_cube_cache()
 
 void test_corners_cache()
 {
+    std::string basename = random_basename();
+    
     // build a cache to depth 4
-    CacheBuilder<CornersCacheLayer> corners("/tmp/corners");
+    CacheBuilder<CornersCacheLayer> corners(basename);
 	corners.verbose(false);
 	corners.build(4);
     
     // load the cache
-    CornersCache cache("/tmp/corners");
+    CornersCache cache(basename);
     assert(cache.depth() == 4);
     
     // count the cubes at each depth
@@ -90,6 +108,8 @@ void test_corners_cache()
 
 int main()
 {
+    srand(time(NULL));
+    
     test_cube_cache();
     test_corners_cache();
 }

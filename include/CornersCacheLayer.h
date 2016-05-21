@@ -49,7 +49,7 @@ public:
     static int make_first_layer(const std::string &basename);
     static std::string temp_file(const std::string &basename, int deep);
     static std::string cube_file(const std::string &basename, int deep);
-    static bool read_position(std::istream &in, Position &position);
+    static bool read_position(std::istream &in, Position &position, int deep);
     static bool write_position(std::ostream &out, const Position &position, const Cube &next_cube, const Cube::Twist &next_twist);
     static int squash_temp(const std::string &basename, int deep);
     

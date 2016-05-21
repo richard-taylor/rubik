@@ -55,20 +55,22 @@ bool CacheLayer::write_cube(std::ostream &out, const Cube &cube)
 
 bool CacheLayer::read_twist(std::istream &in, Cube::Twist &twist)
 {
-    return false;
+    in.read((char*)&twist, sizeof(Cube::Twist));
+    return !in.eof() && in.good();
 }
 
 bool CacheLayer::write_twist(std::ostream &out, const Cube::Twist &twist)
 {
-    return false;
+    out.write((char*)&twist, sizeof(Cube::Twist));
+    return out.good();
 }
     
-bool CacheLayer::read_scramble(std::istream &in, Scramble &cube)
+bool CacheLayer::read_scramble(std::istream &in, Scramble &scramble, int length)
 {
-    return false;
+    return scramble.read(in, length);
 }
 
 bool CacheLayer::write_scramble(std::ostream &out, const Scramble &scramble)
 {
-    return false;
+    return scramble.write(out);
 }

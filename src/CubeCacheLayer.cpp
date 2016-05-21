@@ -6,6 +6,17 @@
 CubeCacheLayer::CubeCacheLayer(const std::string &basename, int depth)
 : CacheLayer(depth)
 {
+    std::ifstream in(default_name(basename, depth).c_str(), std::ios::binary);
+    if (in)
+    {
+        CubeCacheLayer::Position position;
+    
+        while (read_cube(in, position.m_cube) && read_scramble(in, position.m_scramble, depth))
+        {
+            m_vector.push_back(position);
+        }
+        in.close();
+    }
 }
 
 int CubeCacheLayer::size() const
@@ -81,10 +92,10 @@ std::string CubeCacheLayer::cube_file(const std::string &basename, int deep)
     return default_name(basename, deep);
 }
 
-bool CubeCacheLayer::read_position(std::istream &in, CubeCacheLayer::Position &position)
+bool CubeCacheLayer::read_position(std::istream &in, CubeCacheLayer::Position &position, int deep)
 {
-    read_cube(in, position.m_cube);
-    read_scramble(in, position.m_scramble);
+    bool a = read_cube(in, position.m_cube);
+    bool b = read_scramble(in, position.m_scramble, deep);
     
     return !in.eof() && in.good();
 }
@@ -107,7 +118,7 @@ int CubeCacheLayer::squash_temp(const std::string &basename, int deep)
     
     CubeCacheLayer::Position position;
     
-    while (read_cube(in, position.m_cube) && read_scramble(in, position.m_scramble))
+    while (read_cube(in, position.m_cube) && read_scramble(in, position.m_scramble, deep))
     {
         dupes.push_back(position);
     }

@@ -46,7 +46,7 @@ protected:
     static bool read_twist(std::istream &in, Cube::Twist &twist);
     static bool write_twist(std::ostream &out, const Cube::Twist &twist);
     
-    static bool read_scramble(std::istream &in, Scramble &cube);
+    static bool read_scramble(std::istream &in, Scramble &scramble, int length);
     static bool write_scramble(std::ostream &out, const Scramble &scramble);
     
 private:

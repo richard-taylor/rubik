@@ -53,7 +53,7 @@ Cube Scramble::of(const Cube &cube) const
 
 Cube::Twist Scramble::last() const
 {
-    return twists.back();
+    return twists.size() > 0 ? twists.back() : Cube::Twist();
 }
 
 Scramble Scramble::inverse() const
@@ -104,4 +104,25 @@ bool Scramble::equivalent(const Scramble &other) const
     other.apply(b);
     
     return (a == b);    // equivalent if both scramble to the same position
+}
+
+bool Scramble::read(std::istream &in, int length)
+{
+    Cube::Twist next;
+    twists.clear();
+    for (int i = 0; i < length; i++)
+    {
+        in.read((char*)&next, sizeof(Cube::Twist));
+        twists.push_back(next);
+    }
+    return !in.eof() && in.good();
+}
+
+bool Scramble::write(std::ostream &out) const
+{
+    for (int i = 0; i < twists.size(); i++)
+    {
+        out.write((char*)&twists[i], sizeof(Cube::Twist));
+    }
+    return out.good();
 }

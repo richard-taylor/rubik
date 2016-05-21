@@ -108,7 +108,7 @@ std::string CornersCacheLayer::cube_file(const std::string &basename, int deep)
     return join(basename, deep, "cube");
 }
 
-bool CornersCacheLayer::read_position(std::istream &in, CornersCacheLayer::Position &position)
+bool CornersCacheLayer::read_position(std::istream &in, CornersCacheLayer::Position &position, int deep)
 {
     read_cube(in, position.m_cube);
     read_twist(in, position.m_twist);
