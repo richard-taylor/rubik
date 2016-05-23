@@ -67,6 +67,11 @@ Scramble Scramble::inverse() const
     return inv;
 }
 
+void Scramble::append(const Scramble &other)
+{
+    twists.insert(twists.end(), other.twists.begin(), other.twists.end());
+}
+
 std::string Scramble::toString() const
 {
     std::stringstream str;

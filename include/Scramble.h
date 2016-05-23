@@ -56,6 +56,11 @@ public:
     bool equivalent(const Scramble &other) const;
     
     /**
+    Add another scramble to the end of this one.
+    */
+    void append(const Scramble &other);
+    
+    /**
     Return a string representation of the scramble.
     */
     std::string toString() const;
