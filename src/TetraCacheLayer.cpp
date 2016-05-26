@@ -3,7 +3,7 @@
 #include <cassert>
 #include <fstream>
 #include <sstream>
-#include "CornersCacheLayer.h"
+#include "TetraCacheLayer.h"
 
 static void load_states(const std::string &filename, std::vector<unsigned long long> &states)
 {
@@ -31,7 +31,7 @@ static void load_states(const std::string &filename, std::vector<unsigned long l
     }
 }
 
-CornersCacheLayer::CornersCacheLayer(const std::string &basename, int depth)
+TetraCacheLayer::TetraCacheLayer(const std::string &basename, int depth)
 : CacheLayer(depth)
 {
     std::stringstream filename;
@@ -40,14 +40,37 @@ CornersCacheLayer::CornersCacheLayer(const std::string &basename, int depth)
     load_states(filename.str(), m_vector);
 }
 
-int CornersCacheLayer::size() const
+int TetraCacheLayer::size() const
 {
     return m_vector.size();
 }
 
-bool CornersCacheLayer::contains(const Cube &cube) const
+inline unsigned long long cubits(const Cube &cube)
 {
-    unsigned long long corners = cube.corner_bits();
+    unsigned char corners[8];
+    unsigned char edges[12];
+    
+    cube.get_pieces(corners, edges);
+    
+    // enum Corner { RUF, LUF, LUB, RUB, RDF, LDF, LDB, RDB };
+    // enum Edge { RU, UF, LU, UB, RF, LF, LB, RB, RD, DF, LD, DB };
+    
+    unsigned long long ruf = (unsigned long long)corners[Cube::RUF];
+    unsigned long long uf  = (unsigned long long)edges[Cube::UF];
+    unsigned long long luf = (unsigned long long)corners[Cube::LUF];
+    unsigned long long ru  = (unsigned long long)edges[Cube::RU];
+    unsigned long long rub = (unsigned long long)corners[Cube::RUB];
+    unsigned long long rf  = (unsigned long long)edges[Cube::RF];
+    unsigned long long rdf = (unsigned long long)corners[Cube::RDF];
+    
+    return ruf | (uf <<  8) | (luf << 16)
+               | (ru << 24) | (rub << 32)
+               | (rf << 40) | (rdf << 48);
+}
+
+bool TetraCacheLayer::contains(const Cube &cube) const
+{
+    unsigned long long corners = cubits(cube);
     
     std::vector<unsigned long long>::const_iterator i =
         std::lower_bound(m_vector.begin(), m_vector.end(), corners);
@@ -57,58 +80,58 @@ bool CornersCacheLayer::contains(const Cube &cube) const
 
 // stuff for CacheBuilder
 
-bool CornersCacheLayer::write_corners(std::ostream &out, unsigned long long corners)
+bool TetraCacheLayer::write_corners(std::ostream &out, unsigned long long corners)
 {
     out.write((char*)&corners, sizeof(unsigned long long));
     
     return out.good();
 }
 
-Cube CornersCacheLayer::Position::cube() const
+Cube TetraCacheLayer::Position::cube() const
 {
     return m_cube;
 }
 
-Cube::Twist CornersCacheLayer::Position::lastTwist() const
+Cube::Twist TetraCacheLayer::Position::lastTwist() const
 {
     return m_twist;
 }
 
-bool CornersCacheLayer::Position::operator<(const Position &other) const
+bool TetraCacheLayer::Position::operator<(const Position &other) const
 {
-    return (m_cube.corner_bits() < other.m_cube.corner_bits());
+    return (cubits(m_cube) < cubits(other.m_cube));
 }
 
-bool CornersCacheLayer::exists(const std::string &basename, int deep)
+bool TetraCacheLayer::exists(const std::string &basename, int deep)
 {
     return CacheLayer::exists(basename, deep);
 }
 
-int CornersCacheLayer::make_first_layer(const std::string &basename)
+int TetraCacheLayer::make_first_layer(const std::string &basename)
 {
     std::ofstream lout(default_name(basename, 0).c_str(), std::ios::binary);
     std::ofstream cout(cube_file(basename, 0).c_str(), std::ios::binary);
 
-    unsigned long long corners = Cube().corner_bits();
+    unsigned long long corners = cubits(Cube());
     
-    if (lout && write_corners(lout, Cube().corner_bits()) &&
+    if (lout && write_corners(lout, cubits(Cube())) &&
         cout && write_cube(cout, Cube()) && write_twist(cout, Cube::Twist()))
         return 1;
             
     return 0;
 }
 
-std::string CornersCacheLayer::temp_file(const std::string &basename, int deep)
+std::string TetraCacheLayer::temp_file(const std::string &basename, int deep)
 {
     return join(basename, deep, "temp");
 }
 
-std::string CornersCacheLayer::cube_file(const std::string &basename, int deep)
+std::string TetraCacheLayer::cube_file(const std::string &basename, int deep)
 {
     return join(basename, deep, "cube");
 }
 
-bool CornersCacheLayer::read_position(std::istream &in, CornersCacheLayer::Position &position, int deep)
+bool TetraCacheLayer::read_position(std::istream &in, TetraCacheLayer::Position &position, int deep)
 {
     read_cube(in, position.m_cube);
     read_twist(in, position.m_twist);
@@ -116,8 +139,8 @@ bool CornersCacheLayer::read_position(std::istream &in, CornersCacheLayer::Posit
     return !in.eof() && in.good();
 }
 
-bool CornersCacheLayer::write_position(std::ostream &out,
-                                       const CornersCacheLayer::Position &position,
+bool TetraCacheLayer::write_position(std::ostream &out,
+                                       const TetraCacheLayer::Position &position,
                                        const Cube &next_cube,
                                        const Cube::Twist &next_twist)
 {
@@ -125,9 +148,9 @@ bool CornersCacheLayer::write_position(std::ostream &out,
     write_twist(out, next_twist);
 }
 
-int CornersCacheLayer::squash_temp(const std::string &basename, int deep)
+int TetraCacheLayer::squash_temp(const std::string &basename, int deep)
 {
-    std::vector<CornersCacheLayer::Position> dupes;
+    std::vector<TetraCacheLayer::Position> dupes;
     
     std::ifstream in(temp_file(basename, deep).c_str(), std::ios::binary);
     if (in)
@@ -135,17 +158,17 @@ int CornersCacheLayer::squash_temp(const std::string &basename, int deep)
         in.seekg(0, std::ios::end);
         
         int nbytes = in.tellg();
-        int nitems = nbytes / sizeof(CornersCacheLayer::Position);
+        int nitems = nbytes / sizeof(TetraCacheLayer::Position);
         
         dupes.reserve(nitems);
         in.seekg(0, std::ios::beg);
         
         // TODO faster way?
         
-        CornersCacheLayer::Position value;
+        TetraCacheLayer::Position value;
         for (int i = 0; i < nitems; i++)
         {
-            in.read((char*)&value, sizeof(CornersCacheLayer::Position));
+            in.read((char*)&value, sizeof(TetraCacheLayer::Position));
             dupes.push_back(value);
         }
         
@@ -166,11 +189,11 @@ int CornersCacheLayer::squash_temp(const std::string &basename, int deep)
         
             for (int i = 0; i < dupes.size(); ++i)
             {
-                unsigned long long value = dupes[i].m_cube.corner_bits();
+                unsigned long long value = cubits(dupes[i].m_cube);
                 
                 if (i == 0 || value != previous)
                 {
-                    ocube.write((char*)&dupes[i], sizeof(CornersCacheLayer::Position));
+                    ocube.write((char*)&dupes[i], sizeof(TetraCacheLayer::Position));
                     ostate.write((char*)&value, sizeof(unsigned long long));
                     previous = value;
                     ++written;

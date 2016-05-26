@@ -6,6 +6,8 @@ class Cube
 {
 public:
     enum Face { L, R, U, D, F, B };
+    enum Corner { RUF, LUF, LUB, RUB, RDF, LDF, LDB, RDB };
+    enum Edge { RU, UF, LU, UB, RF, LF, LB, RB, RD, DF, LD, DB };
 
     /**
     Nested class to represent turning a face by 1, 2 or 3 lots of 90 degrees.
@@ -68,6 +70,11 @@ public:
     */
     unsigned long long corner_bits() const;
     
+    /**
+    Get the positions and orientations of the 8 corners and 12 edges.
+    */
+    void get_pieces(unsigned char corner[8], unsigned char edge[12]) const;
+
 private:
     static const unsigned char SOLVED_STATE[];
     static const int STATE_SIZE = 14;

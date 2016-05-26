@@ -55,7 +55,7 @@ const byte B765 = B7 | B6 | B5;
 const byte B3210 = B3 | B2 | B1 | B0;
 const byte B7654 = B7 | B6 | B5 | B4; 
 
-void pack(byte *unpacked, byte *packed)
+void pack(const byte *unpacked, byte *packed)
 {
     // corners
     
@@ -82,7 +82,7 @@ void pack(byte *unpacked, byte *packed)
     packed[13] = ((unpacked[16] & B0) << 7) | ((unpacked[17] & B0) << 6) | ((unpacked[18] & B0) << 5) | ((unpacked[19] & B0) << 4);
 }
 
-void unpack(byte *packed, byte *unpacked)
+void unpack(const byte *packed, byte *unpacked)
 {
     // corners
     // 76543210
@@ -157,9 +157,6 @@ bool Cube::Twist::operator==(const Cube::Twist &other) const
        
 const byte Cube::SOLVED_STATE[] = {3, 32, 64, 99, 130, 160, 1, 35, 69, 103, 137, 171, 0, 0};
 
-enum Corner { RUF, LUF, LUB, RUB, RDF, LDF, LDB, RDB };
-enum Edge { RU, UF, LU, UB, RF, LF, LB, RB, RD, DF, LD, DB };
-
 enum Axis { X, Y, Z };
 enum Orient { XYZ, XZY, YXZ, YZX, ZXY, ZYX };
 
@@ -202,17 +199,17 @@ static inline byte flip_lsb(byte hi_lo)
     return (hi_lo ^ 0x01);
 }
 
-static inline byte get_corner(Corner corner, byte *unpacked)
+static inline byte get_corner(Cube::Corner corner, byte *unpacked)
 {
     return unpacked[corner];
 }
 
-static inline void set_corner(Corner corner, byte index, byte orient, byte *unpacked)
+static inline void set_corner(Cube::Corner corner, byte index, byte orient, byte *unpacked)
 {
     unpacked[corner] = (index << 4) | orient;
 }
 
-static void corner_cycle(Axis axis, byte* unpacked, Corner a, Corner b, Corner c, Corner d)
+static void corner_cycle(Axis axis, byte* unpacked, Cube::Corner a, Cube::Corner b, Cube::Corner c, Cube::Corner d)
 {
     // a -> b -> c -> d -> a
     
@@ -229,7 +226,7 @@ static void corner_cycle(Axis axis, byte* unpacked, Corner a, Corner b, Corner c
     set_corner(a, hi4(D), table[lo4(D)], unpacked);
 }
 
-static void corner_swap(byte *unpacked, Corner a, Corner b)
+static void corner_swap(byte *unpacked, Cube::Corner a, Cube::Corner b)
 {
     byte A = get_corner(a, unpacked);
     byte B = get_corner(b, unpacked);
@@ -238,17 +235,17 @@ static void corner_swap(byte *unpacked, Corner a, Corner b)
     set_corner(a, hi4(B), lo4(B), unpacked);
 }
 
-static inline byte get_edge(Edge edge, byte *unpacked)
+static inline byte get_edge(Cube::Edge edge, byte *unpacked)
 {
     return unpacked[edge + 8];
 }
 
-static inline void set_edge(Edge edge, byte index, byte orient, byte *unpacked)
+static inline void set_edge(Cube::Edge edge, byte index, byte orient, byte *unpacked)
 {
     unpacked[edge + 8] = (index << 4) | orient;
 }
 
-static void edge_cycle(Axis axis, byte *unpacked, Edge a, Edge b, Edge c, Edge d)
+static void edge_cycle(Axis axis, byte *unpacked, Cube::Edge a, Cube::Edge b, Cube::Edge c, Cube::Edge d)
 {
     // a -> b -> c -> d -> a
     
@@ -273,7 +270,7 @@ static void edge_cycle(Axis axis, byte *unpacked, Edge a, Edge b, Edge c, Edge d
     }
 }
 
-static void edge_swap(byte *unpacked, Edge a, Edge b)
+static void edge_swap(byte *unpacked, Cube::Edge a, Cube::Edge b)
 {
     byte A = get_edge(a, unpacked);
     byte B = get_edge(b, unpacked);
@@ -435,6 +432,35 @@ unsigned long long Cube::corner_bits() const
            ((unsigned long long)state[3] << 16) | 
            ((unsigned long long)state[4] <<  8) | 
            ((unsigned long long)state[5]);
+}
+
+void Cube::get_pieces(unsigned char corner[8], unsigned char edge[12]) const
+{
+    byte unpacked[20];
+    unpack(state, unpacked);
+    
+    // the unpacked state has what piece is in each slot.
+    // we invert that to get which slot each piece is in.
+    
+    for (int i = 0; i < 8; i++)
+    {
+        byte c = unpacked[i];
+        
+        byte index  = (c & 0xf0) >> 4;
+        byte orient = (c & 0x0f);
+        
+        corner[index] = (i << 4) | orient;
+    }
+    
+    for (int i = 0; i < 12; i++)
+    {
+        byte e = unpacked[8 + i];
+        
+        byte index  = (e & 0xf0) >> 4;
+        byte orient = (e & 0x0f);
+        
+        edge[index] = (i << 4) | orient;
+    }
 }
 
 void Cube::debug(const char *label)
