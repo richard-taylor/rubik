@@ -5,6 +5,8 @@
 #include "Cube.h"
 #include "CubeConstants.h"
 
+enum Orient { XYZ, XZY, YXZ, YZX, ZXY, ZYX };
+
 void sexy_test(Cube::Twist a, Cube::Twist b)
 {
     // six sexy moves in a pair of faces returns us to solved
@@ -129,4 +131,60 @@ int main()
     sexy_test(F, D);
     sexy_test(L, D);
     sexy_test(B, D);
+    
+    // check that we can extract the individual piece positions
+    unsigned char corners[8];
+    unsigned char edges[12];
+    
+    Cube extract;
+    extract.get_pieces(corners, edges);
+    
+    // solved pieces
+    assert(corners[Cube::RUF] == Cube::RUF << 4);
+    assert(corners[Cube::LUF] == Cube::LUF << 4);
+    assert(corners[Cube::LUB] == Cube::LUB << 4);
+    assert(corners[Cube::RUB] == Cube::RUB << 4);
+    assert(corners[Cube::RDF] == Cube::RDF << 4);
+    assert(corners[Cube::LDF] == Cube::LDF << 4);
+    assert(corners[Cube::LDB] == Cube::LDB << 4);
+    assert(corners[Cube::RDB] == Cube::RDB << 4);
+    
+    assert(edges[Cube::RU] == Cube::RU << 4);
+    assert(edges[Cube::UF] == Cube::UF << 4);
+    assert(edges[Cube::LU] == Cube::LU << 4);
+    assert(edges[Cube::UB] == Cube::UB << 4);
+    assert(edges[Cube::RF] == Cube::RF << 4);
+    assert(edges[Cube::LF] == Cube::LF << 4);
+    assert(edges[Cube::LB] == Cube::LB << 4);
+    assert(edges[Cube::RB] == Cube::RB << 4);
+    assert(edges[Cube::RD] == Cube::RD << 4);
+    assert(edges[Cube::DF] == Cube::DF << 4);
+    assert(edges[Cube::LD] == Cube::LD << 4);
+    assert(edges[Cube::DB] == Cube::DB << 4);
+    
+    // extract after a turn
+    extract.twist(R);
+    extract.get_pieces(corners, edges);
+    
+    assert(corners[Cube::RUF] == Cube::RUB << 4 | XZY);
+    assert(corners[Cube::LUF] == Cube::LUF << 4);
+    assert(corners[Cube::LUB] == Cube::LUB << 4);
+    assert(corners[Cube::RUB] == Cube::RDB << 4 | XZY);
+    assert(corners[Cube::RDF] == Cube::RUF << 4 | XZY);
+    assert(corners[Cube::LDF] == Cube::LDF << 4);
+    assert(corners[Cube::LDB] == Cube::LDB << 4);
+    assert(corners[Cube::RDB] == Cube::RDF << 4 | XZY);
+    
+    assert(edges[Cube::RU] == Cube::RB << 4);
+    assert(edges[Cube::UF] == Cube::UF << 4);
+    assert(edges[Cube::LU] == Cube::LU << 4);
+    assert(edges[Cube::UB] == Cube::UB << 4);
+    assert(edges[Cube::RF] == Cube::RU << 4);
+    assert(edges[Cube::LF] == Cube::LF << 4);
+    assert(edges[Cube::LB] == Cube::LB << 4);
+    assert(edges[Cube::RB] == Cube::RD << 4);
+    assert(edges[Cube::RD] == Cube::RF << 4);
+    assert(edges[Cube::DF] == Cube::DF << 4);
+    assert(edges[Cube::LD] == Cube::LD << 4);
+    assert(edges[Cube::DB] == Cube::DB << 4);
 }
