@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cassert>
 #include <fstream>
+#include <set>
 #include <sstream>
 #include "TetraCacheLayer.h"
 
@@ -12,8 +13,8 @@ static void load_states(const std::string &filename, std::vector<unsigned long l
     {
         ifs.seekg(0, std::ios::end);
         
-        int nbytes = ifs.tellg();
-        int nitems = nbytes / sizeof(unsigned long long);
+        long nbytes = ifs.tellg();
+        long nitems = nbytes / sizeof(unsigned long long);
         
         states.reserve(nitems);
         ifs.seekg(0, std::ios::beg);
@@ -21,7 +22,7 @@ static void load_states(const std::string &filename, std::vector<unsigned long l
         // TODO faster way?
         
         unsigned long long value;
-        for (int i = 0; i < nitems; i++)
+        for (long i = 0; i < nitems; i++)
         {
             ifs.read((char*)&value, sizeof(unsigned long long));
             states.push_back(value);
@@ -102,6 +103,11 @@ bool TetraCacheLayer::Position::operator<(const Position &other) const
     return (cubits(m_cube) < cubits(other.m_cube));
 }
 
+bool TetraCacheLayer::Position::operator==(const Position &other) const
+{
+    return (cubits(m_cube) == cubits(other.m_cube));
+}
+
 bool TetraCacheLayer::exists(const std::string &basename, int deep)
 {
     return CacheLayer::exists(basename, deep);
@@ -150,32 +156,37 @@ bool TetraCacheLayer::write_position(std::ostream &out,
 
 int TetraCacheLayer::squash_temp(const std::string &basename, int deep)
 {
-    std::vector<TetraCacheLayer::Position> dupes;
+    // TODO this is going to be slow, but better to be right first then get faster later...
+    // TODO ...it would be good to avoid these huge files full of dupes in the first place.
+    
+    std::set<unsigned long long> seen;
+    std::pair<std::set<unsigned long long>::iterator,bool> inserted;
+    
+    std::vector<TetraCacheLayer::Position> nodupes;
     
     std::ifstream in(temp_file(basename, deep).c_str(), std::ios::binary);
     if (in)
-    {
-        in.seekg(0, std::ios::end);
-        
-        int nbytes = in.tellg();
-        int nitems = nbytes / sizeof(TetraCacheLayer::Position);
-        
-        dupes.reserve(nitems);
-        in.seekg(0, std::ios::beg);
-        
-        // TODO faster way?
-        
+    {   
         TetraCacheLayer::Position value;
-        for (int i = 0; i < nitems; i++)
+        in.read((char*)&value, sizeof(TetraCacheLayer::Position));
+        
+        while (!in.eof() && in.good())
         {
+            unsigned long long state = cubits(value.m_cube);
+            
+            inserted = seen.insert(state);
+            
+            if (inserted.second) // inserted => first time seen
+            {
+                nodupes.push_back(value);
+            }
             in.read((char*)&value, sizeof(TetraCacheLayer::Position));
-            dupes.push_back(value);
         }
         
         in.close();
     }
-    
-    std::sort(dupes.begin(), dupes.end());
+       
+    std::sort(nodupes.begin(), nodupes.end());
  
     int written = 0;
        
@@ -185,19 +196,13 @@ int TetraCacheLayer::squash_temp(const std::string &basename, int deep)
         std::ofstream ostate(default_name(basename, deep).c_str(), std::ios::binary);
         if (ostate)
         {
-            unsigned long long previous = 0;
-        
-            for (int i = 0; i < dupes.size(); ++i)
+            for (long i = 0; i < nodupes.size(); ++i)
             {
-                unsigned long long value = cubits(dupes[i].m_cube);
+                unsigned long long value = cubits(nodupes[i].m_cube);
                 
-                if (i == 0 || value != previous)
-                {
-                    ocube.write((char*)&dupes[i], sizeof(TetraCacheLayer::Position));
-                    ostate.write((char*)&value, sizeof(unsigned long long));
-                    previous = value;
-                    ++written;
-                }
+                ocube.write((char*)&nodupes[i], sizeof(TetraCacheLayer::Position));
+                ostate.write((char*)&value, sizeof(unsigned long long));
+                ++written;
             }
             ostate.close();
         }

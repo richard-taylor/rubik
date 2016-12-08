@@ -35,6 +35,7 @@ public:
         Cube::Twist lastTwist() const;
         
         bool operator<(const Position &other) const;
+        bool operator==(const Position &other) const;
 
     private:
         Cube m_cube;
