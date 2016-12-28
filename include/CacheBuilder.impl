@@ -41,91 +41,73 @@ bool CacheBuilder<LayerType>::seen_before(const Cube &cube)
 {
     for (int i = m_layers.size() - 1; i >= 0; --i)
     {
-        if (m_layers[i].contains(cube))
+        if (m_layers[i]->contains(cube))
             return true;
     }
     return false;
 }
 
-template <class LayerType>
-//
-int CacheBuilder<LayerType>::new_layer(int N)
+template <class LayerType> void CacheBuilder<LayerType>::new_layer(LayerType *layer)
 {
-    // first create the new state list with possible duplicates
-    
-    std::ofstream temp(LayerType::temp_file(m_basename, N).c_str(), std::ios::binary);
+    layer->initialise();
     
     long considered = 0;
-    long forwarded = 0;
     
-    // iterate over the set of cubes from the previous layer
+    // iterate over the set of cube positions from the previous layer
     
-    std::ifstream cubes(LayerType::cube_file(m_basename, N - 1).c_str(), std::ios::binary);
+    Cube previous_cube;
+    Cube::Twist last_twist;
     
-    typename LayerType::Position position;
-    
-    while (LayerType::read_position(cubes, position, N - 1))
+    while (layer->get_position(previous_cube, last_twist))
     {
-        Cube::Twist twist = position.lastTwist();
-
-        int lastFace = (twist == noTwist) ? -1 : twist.getFace();
+        int last_face = (last_twist == noTwist) ? -1 : last_twist.getFace();
             
         for (int f = 0; f < 6; f++)
         {
-            if (cant_follow(lastFace, f))
+            if (cant_follow(last_face, f))
                 continue;
                     
             for (int t = 1; t <= 3; t++)
             {
                 Cube::Twist next_twist((Cube::Face)f, t);
                 
-                Cube next_cube = position.cube();
+                Cube next_cube = previous_cube;
                 next_cube.twist(next_twist);
                 
                 ++considered;
                 
                 if (!seen_before(next_cube))
                 {
-                    ++forwarded;
-                    
-                    LayerType::write_position(temp, position, next_cube, next_twist);
+                    layer->add_position(next_cube, next_twist);
                 }
             }
         }
     }
-    SAY("New states (including duplicates) " << forwarded << " / " << considered);
+    SAY("New states considered " << considered);
 
-    temp.close();
-        
-    SAY("Removing duplicate states...");
-    int remaining = LayerType::squash_temp(m_basename, N);
-    SAY("Unique states found " << remaining);
+    SAY("Finalising layer states...");
+    int remaining = layer->finalise();
     
-    return remaining;
+    SAY("Unique states found " << remaining);
 }
 
-template <class LayerType> int CacheBuilder<LayerType>::build_layer(int N)
+template <class LayerType> LayerType* CacheBuilder<LayerType>::build_layer(int N)
 {
     SAY("Looking for cache layer " << N);
     
-    if (LayerType::exists(m_basename, N))
+    LayerType *layer = new LayerType(m_basename, N);
+    
+    if (layer->size() > 0)
     {
         SAY("Found it.");
-        return 1;
     }
     else
     {
         SAY("Not found. Building it...");
         
-        if (N == 0)
-        {
-            return LayerType::make_first_layer(m_basename);
-        }
-        else
-        {
-            return new_layer(N);
-        }
+        new_layer(layer);
     }
+    return layer;
 }
 
 template <class LayerType> void CacheBuilder<LayerType>::build(int deep)
@@ -140,16 +122,29 @@ template <class LayerType> void CacheBuilder<LayerType>::build(int deep)
         {
             // do not add empty layers or try to build more after an empty one
             
-            if (build_layer(i) > 0)
+            LayerType *layer = build_layer(i);
+            
+            if (layer->size() > 0)
             {
-                m_layers.push_back(LayerType(m_basename, i));
+                m_layers.push_back(layer);
                 
-                SAY("Loaded layer " << i << " with " << m_layers[i].size() << " states.");
-                total += m_layers[i].size();
+                SAY("Loaded layer " << i << " with " << layer->size() << " states.");
+                total += layer->size();
             }
         }
     }
     SAY("Total number of states: " << total);
+}
+
+template <class LayerType>
+//
+void CacheBuilder<LayerType>::free()
+{
+    for (int i = 0; i < m_layers.size(); i++)
+    {
+        delete m_layers[i];
+    }
+    m_layers.clear();
 }
 
 #endif

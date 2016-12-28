@@ -7,8 +7,10 @@
 #include "CacheLayer.h"
 #include "Cube.h"
 
-CacheLayer::CacheLayer(int depth) : m_depth(depth)
+CacheLayer::CacheLayer(const std::string &basename, int depth, int state_size)
+: m_basename(basename), m_depth(depth), m_states(state_size)
 {
+    load();
 }
 
 int CacheLayer::depth() const
@@ -16,9 +18,26 @@ int CacheLayer::depth() const
     return m_depth;
 }
 
-// static methods for CacheBuilder
+int CacheLayer::size() const
+{
+    return m_states; // m_states.size();
+}
+    
+/**
+Test for a cached cube state in this layer.
+*/
+bool CacheLayer::contains(const Cube &cube) const
+{
+    unsigned char state[m_states.state_size()];
+    
+    extract_state(cube, state);
+    
+    return true; // m_states.contains(state);
+}
 
-std::string CacheLayer::join(const std::string &basename, int N, const std::string &suffix)
+// string utilities
+
+std::string join(const std::string &basename, int N, const std::string &suffix)
 {
     std::stringstream ss;
     ss << basename << "." << N;
@@ -30,47 +49,71 @@ std::string CacheLayer::join(const std::string &basename, int N, const std::stri
     return ss.str();
 }
 
-std::string CacheLayer::default_name(const std::string &basename, int deep)
+// optional overrides
+
+std::string CacheLayer::name()
 {
-    return join(basename, deep, "");
+    return join(m_basename, m_depth, "");
 }
 
-bool CacheLayer::exists(const std::string &basename, int deep)
+// build support
+
+void CacheLayer::load()
 {
-    struct stat buffer;   
-    return (stat(default_name(basename, deep).c_str(), &buffer) == 0);
+    // m_states.load(name());
 }
 
-bool CacheLayer::read_cube(std::istream &in, Cube &cube)
+// methods called by CacheBuilder
+
+void CacheLayer::initialise()
 {
-    in.read((char*)&cube, sizeof(Cube));
-    return !in.eof() && in.good();
+    if (m_depth == 0)
+    {
+        // create the first layer
+    }
+    else
+    {
+        cubes.reset(new ifstream(join(m_basename, N - 1, "cubes").c_str(), std::ios::binary));
+        temp.reset(new ofstream(join(m_basename, N, "temp").c_str(), std::ios::binary));
+    }
 }
 
-bool CacheLayer::write_cube(std::ostream &out, const Cube &cube)
+bool CacheLayer::get_position(Cube &cube, Cube::Twist &twist)
 {
-    out.write((char*)&cube, sizeof(Cube));
-    return out.good();
-}
-
-bool CacheLayer::read_twist(std::istream &in, Cube::Twist &twist)
-{
-    in.read((char*)&twist, sizeof(Cube::Twist));
-    return !in.eof() && in.good();
-}
-
-bool CacheLayer::write_twist(std::ostream &out, const Cube::Twist &twist)
-{
-    out.write((char*)&twist, sizeof(Cube::Twist));
-    return out.good();
-}
+    if (m_depth == 0)
+    {
+        return false;
+    }
     
-bool CacheLayer::read_scramble(std::istream &in, Scramble &scramble, int length)
-{
-    return scramble.read(in, length);
+    cubes->read((char*)&cube, sizeof(Cube));
+    cubes->read((char*)&twist, sizeof(Cube::Twist));
+    
+    return !cubes->eof() && cubes->good();
 }
 
-bool CacheLayer::write_scramble(std::ostream &out, const Scramble &scramble)
+bool CacheLayer::add_position(const Cube &cube, const Cube::Twist &twist)
+{     
+    temp->write((char*)&cube, sizeof(Cube));
+    temp->write((char*)&twist, sizeof(Cube::Twist));
+    
+    return temp->good();
+}
+
+void CacheLayer::finalise()
 {
-    return scramble.write(out);
+    // close the .temp and .cubes files.
+    
+    if (cubes)
+    {
+        cubes->close();
+    }
+    if (temp)
+    {
+        temp->close();
+    }
+    
+    // remove duplicates from .temp and create the next .cubes file
+    
+    // read in what we created to this new layer
+    load();  
 }

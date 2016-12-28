@@ -15,8 +15,10 @@ class CacheLayer
 public:
     /**
     A layer of a certain depth (number of moves from solved).
+    
+    Each state stored in the layer is the same size (in bytes).
     */
-    CacheLayer(int deep);
+    CacheLayer(const std::string &basename, int deep, int state_size);
     
     /**
     Get the depth of the layer (number of moves from solved).
@@ -26,31 +28,36 @@ public:
     /**
     Count the number of states in this layer.
     */
-    virtual int size() const = 0;
+    int size() const;
     
     /**
     Test for a cached cube state in this layer.
     */
-    virtual bool contains(const Cube &cube) const = 0;
+    bool contains(const Cube &cube) const;
         
-protected:
-    // stuff for CacheBuilder
-    
-    static std::string join(const std::string &basename, int N, const std::string &suffix);
-    static std::string default_name(const std::string &basename, int deep);
-    static bool exists(const std::string &basename, int deep);
+    // support for CacheBuilder
+    //
+    virtual void initialise();
+    virtual bool get_position(Cube &cube, Cube::Twist &twist);
+    virtual bool add_position(const Cube &cube, const Cube::Twist &twist);
+    virtual void finalise();
 
-    static bool read_cube(std::istream &in, Cube &cube);
-    static bool write_cube(std::ostream &out, const Cube &cube);
+protected:
+    virtual void extract_state(const Cube &cube, unsigned char *state) const = 0;
     
-    static bool read_twist(std::istream &in, Cube::Twist &twist);
-    static bool write_twist(std::ostream &out, const Cube::Twist &twist);
+    // optional overrides
+    virtual std::string name();
     
-    static bool read_scramble(std::istream &in, Scramble &scramble, int length);
-    static bool write_scramble(std::ostream &out, const Scramble &scramble);
+    // needed by finalise (loads from a filename returned by name())
+    void load();
     
 private:
+    std::string m_basename;
     int m_depth;
+    int m_states; // int is a placeholder for the new "set" type
+    
+    std::unique_ptr<std::ifstream> cubes;
+    std::unique_ptr<std::ofstream> temp;
 };
 
 #endif

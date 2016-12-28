@@ -36,14 +36,20 @@ public:
     */
     void build(int deep);
     
+    /**
+    Free all the memory used by the layers in this cache builder.
+    
+    Leaves all the generated files untouched.
+    */
+    void free();
+    
 private:
     std::string m_basename;
     bool m_verbose;
-    std::vector<LayerType> m_layers;
+    std::vector<LayerType*> m_layers;
     
-    int new_layer(int N);
     int build_layer(int N);
-    
+    void new_layer(LayerType *layer);
     bool seen_before(const Cube &cube);
 };
     
