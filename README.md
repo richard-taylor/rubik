@@ -11,3 +11,7 @@ On my old laptop this takes about 0.5 seconds to find all the optimal solutions 
 (the timing in the script includes the time to generate the cache)
 
 RT
+
+This branch is going to use tries to store states with the leaf nodes having a count of the minimum number of turns to solve.
+
+That should be very space efficient and fairly fast to look-up. It also avoids a lot of the faffing about with layers that have stalled the work.
