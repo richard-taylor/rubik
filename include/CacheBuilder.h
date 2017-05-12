@@ -2,22 +2,20 @@
 #ifndef CACHEBUILDER_H
 #define CACHEBUILDER_H
 
-#include <string>
-#include <vector>
+#include "Cube.h"
+#include "Scramble.h"
 
-class Cube;
+class CubeCache;
+class Packer;
 
-template <class LayerType> class CacheBuilder
+class CacheBuilder
 {
 public:
     /**
-    Builder with a given basename.
-    
-    The layers will have ".1", ".2", ".3" etc appended to the basename.
-    
-    Some other intermediate files are created too, all with the same basename.
+    Builder for a given cache, using a packer. The packer converts a
+    Cube state into a fixed-size array of bytes.
     */
-    CacheBuilder(const std::string &basename);
+    CacheBuilder(CubeCache &cache, Packer &packer);
 
     /**
     To print messages on stdout or not? Default is no messages.
@@ -30,28 +28,17 @@ public:
     bool verbose() const;
     
     /**
-    Build all layers up to and including the given depth.
-    
-    The files from previously created layers are reused to create new layers.
+    Build a cache up to and including the given turn depth.
     */
-    void build(int deep);
-    
-    /**
-    Free all the memory used by the layers in this cache builder.
-    
-    Leaves all the generated files untouched.
-    */
-    void free();
+    void build(int depth);
     
 private:
-    std::string m_basename;
+    void depth_first(Cube cube, Scramble scramble, Cube::Twist twist);
+    
+    CubeCache &m_cache;
+    Packer &m_packer;
     bool m_verbose;
-    std::vector<LayerType*> m_layers;
-    
-    int build_layer(int N);
-    void new_layer(LayerType *layer);
-    bool seen_before(const Cube &cube);
+    int m_depth;
 };
-    
-#include "CacheBuilder.impl"
+
 #endif

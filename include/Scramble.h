@@ -31,6 +31,13 @@ public:
     void add(Cube::Twist twist);
     
     /**
+    Can we add a turn of the given face next?
+    
+    Explain!
+    */
+    bool can_add(Cube::Face face) const;
+    
+    /**
     Apply the scramble to a cube.
     */
     void apply(Cube &cube) const;

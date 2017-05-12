@@ -5,14 +5,11 @@
 
 #define SAY(X) std::cout << X << std::endl;
 
-const Cube::Twist noTwist;
-
-extern bool cant_follow(int last, int next);
-
+/*
 IterativeDeepening::IterativeDeepening()
 {
-    cubes = new CubeCache("cache/tmp_cubes");
-    corners = new CornersCache("cache/tmp_corners");
+    //cubes = new CubeCache("cache/tmp_cubes");
+    //corners = new CornersCache("cache/tmp_corners");
 }
 
 bool IterativeDeepening::can_solve_in_less(int moves, const Cube &cube) const
@@ -115,3 +112,4 @@ Scramble IterativeDeepening::solve(const Cube &cube) const
     }       
     return Scramble();
 }
+*/

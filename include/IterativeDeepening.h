@@ -3,7 +3,6 @@
 #define ITERATIVEDEEPENING_H
 
 #include <string>
-#include "CornersCache.h"
 #include "Cube.h"
 #include "CubeCache.h"
 #include "Scramble.h"
@@ -26,7 +25,7 @@ public:
     
 private:
     CubeCache *cubes;
-    CornersCache *corners;
+    CubeCache *corners;
     
     Scramble try_depth(int depth, const Cube &cube) const;
     bool can_solve_in_less(int moves, const Cube &cube) const;
