@@ -11,7 +11,8 @@
 CacheBuilder::CacheBuilder(CubeCache &cache, Packer &packer)
     : m_cache(cache),
       m_packer(packer), 
-      m_verbose(false)
+      m_verbose(false),
+      m_store(false)
 {
 }
 
@@ -25,20 +26,41 @@ bool CacheBuilder::verbose() const
     return m_verbose;
 }
 
+void CacheBuilder::store_twists(bool store)
+{
+    m_store = store;
+}
+    
+bool CacheBuilder::store_twists() const
+{
+    return m_store;
+}
+    
 void CacheBuilder::depth_first(Cube cube, Scramble scramble, Cube::Twist twist)
 {
     cube.twist(twist);
     scramble.add(twist);
     
+    int turns = scramble.length();
+    
     byte state[100];
     m_packer.pack(cube, state);
     
-    int best = m_cache.solution(state);
+    int status = m_cache.test_and_set(state, turns);
+
+    bool store_twists = (m_store && status <= 0);
     
-    if (scramble.length() < best)
+    if (store_twists)
     {
-        m_cache.solution(state, scramble.length());
+        // this is a better or equal way to get to this state so store
+        // the scramble so far... if we are storing all the twists.
+    }
+    
+    // descend further if turns was less than the previously stored value,
+    // or if it was equal and we are storing all the ways to get to a state.
         
+    if (status < 0 || store_twists)
+    {
         if (scramble.length() < m_depth)
         {
             for (Cube::Face f = Cube::L; f <= Cube::B; f = Cube::Face(f + 1))

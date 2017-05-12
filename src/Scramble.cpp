@@ -36,6 +36,25 @@ void Scramble::add(Cube::Twist twist)
     twists.push_back(twist);
 }
 
+bool Scramble::can_add(Cube::Face face) const
+{
+    Cube::Face previous = last().getFace();
+    
+    if (face == previous)
+        return false;
+
+    switch (previous)
+    {
+        case Cube::L : return true;
+        case Cube::R : return (face != Cube::L);    // L cannot follow R
+        case Cube::U : return true;
+        case Cube::D : return (face != Cube::U);    // U cannot follow D
+        case Cube::F : return true;
+        case Cube::B : return (face != Cube::F);    // F cannot follow B
+    }
+    return false;
+}
+    
 void Scramble::apply(Cube &cube) const
 {
     for (const_it i = twists.begin(); i != twists.end(); ++i)

@@ -28,6 +28,16 @@ public:
     bool verbose() const;
     
     /**
+    To store the moves to reach each state or not? Default is not.
+    */    
+    void store_twists(bool store);
+    
+    /**
+    Is the builder currently storing moves or not?
+    */
+    bool store_twists() const;
+    
+    /**
     Build a cache up to and including the given turn depth.
     */
     void build(int depth);
@@ -38,6 +48,7 @@ private:
     CubeCache &m_cache;
     Packer &m_packer;
     bool m_verbose;
+    bool m_store;
     int m_depth;
 };
 

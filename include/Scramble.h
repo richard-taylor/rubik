@@ -33,7 +33,9 @@ public:
     /**
     Can we add a turn of the given face next?
     
-    Explain!
+    To avoid equivalent sequences like "F F" and "F2" and also "L R" and "R L";
+    use this method to check whether it makes sense to add a turn of the given
+    face to the current scramble.
     */
     bool can_add(Cube::Face face) const;
     

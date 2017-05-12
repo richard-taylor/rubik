@@ -16,16 +16,25 @@ public:
     
     Normally a Cube will be converted into a state using a Packer.
     */
-    CubeCache(int stateSize);
+    CubeCache(int stateBits);
     
-    int stateSize() const;
+    int stateBits() const;
     
     /**
     Set the minumum turn solution for a given cube state.
     
     Turns must be between 0 and 20.
+    
+    The passed value is only set if the state was previously unknown, or
+    if the currently stored value is greater than the passed value.
+    
+    The return value indicates what happened:
+    
+    -1 : the passed value was less than the stored value (or state unknown)
+     0 : the passed value was equal to the stored value
+     1 : the passed value was greater than the stored value
     */
-    void solution(const byte *state, int turns);
+    int test_and_set(const byte *state, int turns);
     
     /**
     Retrieve the minumum turn solution for a given cube state.
@@ -41,7 +50,7 @@ public:
     bool save(const std::string filename);
      
 private:
-    int m_stateSize;
+    int m_stateBits;
 };
 
 #endif
