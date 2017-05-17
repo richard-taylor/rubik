@@ -2,7 +2,7 @@
 #ifndef CUBECACHE_H
 #define CUBECACHE_H
 
-#include "Typedefs.h"
+class State;
 
 class CubeCache
 {
@@ -18,7 +18,12 @@ public:
     */
     CubeCache(int stateBits);
     
-    int stateBits() const;
+    int state_bits() const;
+    
+    /**
+    How many states are stored in the cache?
+    */
+    int count() const;
     
     /**
     Set the minumum turn solution for a given cube state.
@@ -34,7 +39,7 @@ public:
      0 : the passed value was equal to the stored value
      1 : the passed value was greater than the stored value
     */
-    int test_and_set(const byte *state, int turns);
+    int test_and_set(const State &state, int turns);
     
     /**
     Retrieve the minumum turn solution for a given cube state.
@@ -42,7 +47,7 @@ public:
     This will be between 0 and 20. Unless the state is unknown, in which
     case the return value will be -1.
     */
-    int solution(const byte *state) const;
+    int solution(const State &state) const;
     
     /**
     Save the cache data to a named file.

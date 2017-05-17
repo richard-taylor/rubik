@@ -2,14 +2,15 @@
 #ifndef PACKER_H
 #define PACKER_H
 
-#include "Typedefs.h"
-
 class Cube;
+class State;
 
 class Packer
 {
 public:
-    virtual void pack(const Cube &cube, byte *state) = 0;    
+    virtual int state_bits() = 0;
+    
+    virtual void pack(const Cube &cube, State &state) = 0;    
 };
 
 #endif

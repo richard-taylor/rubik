@@ -6,17 +6,22 @@ CubeCache::CubeCache(int stateBits) : m_stateBits(stateBits)
 {
 }
     
-int CubeCache::stateBits() const
+int CubeCache::state_bits() const
 {
     return m_stateBits;
 }
-    
-int CubeCache::test_and_set(const byte *state, int turns)
+
+int CubeCache::count() const
+{
+    return 0;
+}
+   
+int CubeCache::test_and_set(const State &state, int turns)
 {
     return -1;
 }
     
-int CubeCache::solution(const byte *state) const
+int CubeCache::solution(const State &state) const
 {
     return -1;
 }

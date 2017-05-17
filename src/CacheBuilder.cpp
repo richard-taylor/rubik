@@ -5,6 +5,7 @@
 #include "CubeCache.h"
 #include "Packer.h"
 #include "Scramble.h"
+#include "State.h"
 
 #define SAY(X) if (m_verbose) { std::cout << X << std::endl; }
 
@@ -43,7 +44,7 @@ void CacheBuilder::depth_first(Cube cube, Scramble scramble, Cube::Twist twist)
     
     int turns = scramble.length();
     
-    byte state[100];
+    State state(m_packer.state_bits());
     m_packer.pack(cube, state);
     
     int status = m_cache.test_and_set(state, turns);

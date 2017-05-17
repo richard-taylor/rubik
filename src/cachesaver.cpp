@@ -15,7 +15,7 @@ int main()
 	cubeCacheBuilder.verbose(true);
 	cubeCacheBuilder.build(3);
 	
-	cubes.save("cache/tmp_cubes");
+	cubes.save("cache/cubes");
 	
 	//CacheBuilder<CornersCacheLayer> corners("cache/corners");
 	//corners.verbose(true);

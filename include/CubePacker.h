@@ -7,9 +7,9 @@
 class CubePacker : public Packer
 {
 public:
-    void pack(const Cube &cube, byte *state);
+    int state_bits();
     
-    static const int BITS = 88;    
+    void pack(const Cube &cube, State &state);
 };
 
 #endif

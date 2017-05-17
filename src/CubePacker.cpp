@@ -1,7 +1,12 @@
 
 #include "CubePacker.h"
 
-void CubePacker::pack(const Cube &cube, byte *state)
+int CubePacker::state_bits()
+{
+    return 80;
+}
+
+void CubePacker::pack(const Cube &cube, State &state)
 {
     return;
 }

@@ -1,16 +1,7 @@
 
 #include <cassert>
 #include "Scramble.h"
-
-const Cube::Twist R(Cube::R, 1);
-const Cube::Twist U(Cube::U, 1);
-const Cube::Twist D(Cube::D, 1);
-const Cube::Twist F(Cube::F, 1);
-
-const Cube::Twist R2(Cube::R, 2);
-const Cube::Twist D2(Cube::D, 2);
-
-const Cube::Twist Fi(Cube::F, 3);
+#include "CubeConstants.h"
 
 int main()
 {
