@@ -133,8 +133,8 @@ int main()
     sexy_test(B, D);
     
     // check that we can extract the individual piece positions
-    unsigned char corners[8];
-    unsigned char edges[12];
+    byte corners[8];
+    byte edges[12];
     
     Cube extract;
     extract.get_pieces(corners, edges);

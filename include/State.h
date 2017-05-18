@@ -2,7 +2,7 @@
 #ifndef STATE_H
 #define STATE_H
 
-typedef unsigned char byte;
+#include "Typedefs.h"
 
 class Packer;
 

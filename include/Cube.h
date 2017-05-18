@@ -2,6 +2,8 @@
 #ifndef CUBE_H
 #define CUBE_H
 
+#include "Typedefs.h"
+
 class Cube
 {
 public:
@@ -27,7 +29,7 @@ public:
         bool operator==(const Twist &other) const;
         
     private:
-        unsigned char twist;
+        byte twist;
     };
 
     /**
@@ -73,13 +75,13 @@ public:
     /**
     Get the positions and orientations of the 8 corners and 12 edges.
     */
-    void get_pieces(unsigned char corner[8], unsigned char edge[12]) const;
+    void get_pieces(byte corner[8], byte edge[12]) const;
 
 private:
-    static const unsigned char SOLVED_STATE[];
+    static const byte SOLVED_STATE[];
     static const int STATE_SIZE = 14;
     
-    unsigned char state[STATE_SIZE];
+    byte state[STATE_SIZE];
     void debug(const char *label);
 };
 

@@ -4,8 +4,6 @@
 #include <iostream>
 #include "Cube.h"
 
-typedef unsigned char byte;
-
 /* There are 8 corners with 6 possible orientations and 12 edges with 2
 possible orientations.
 
@@ -434,7 +432,7 @@ unsigned long long Cube::corner_bits() const
            ((unsigned long long)state[5]);
 }
 
-void Cube::get_pieces(unsigned char corner[8], unsigned char edge[12]) const
+void Cube::get_pieces(byte corner[8], byte edge[12]) const
 {
     byte unpacked[20];
     unpack(state, unpacked);
