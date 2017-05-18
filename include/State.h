@@ -4,15 +4,24 @@
 
 typedef unsigned char byte;
 
+class Packer;
+
 class State
 {
 public:
     State(int bits);
-    ~State();
+    State(Packer &for_packer);
+    
+    void set_byte(int index, byte data);
+    byte get_byte(int index);
+    
+    bool get_bit(int bit);
     
 private:
+    static const int MAX_BYTES = 20;
+    
     int m_bits;
-    byte *m_bytes;
+    byte m_bytes[MAX_BYTES];
 };
 
 #endif

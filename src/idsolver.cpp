@@ -22,11 +22,11 @@ int main()
     
     clock_t start = clock();
     
-    IterativeDeepening solver;
+    //IterativeDeepening solver;
     //
     clock_t initialised = clock();
     
-    Scramble solution = solver.solve(cube);
+    Scramble solution;// = solver.solve(cube);
     //
     clock_t solved = clock();
     

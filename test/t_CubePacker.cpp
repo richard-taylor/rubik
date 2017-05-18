@@ -10,7 +10,7 @@ int main()
     Cube cube;
     CubePacker packer;
 
-    State state(packer.state_bits());
+    State state(packer);
     
     //assert(state.size_bits() == 80);
     

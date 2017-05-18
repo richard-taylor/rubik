@@ -1,13 +1,44 @@
 
 #include <iostream>
+#include <stdexcept>
 #include "State.h"
+#include "Packer.h"
 
 State::State(int bits) : m_bits(bits)
 {
-    m_bytes = new byte[1 + bits / 8];
+    int bytes = bits / 8 + (bits % 8 == 0 ? 0 : 1);
+    
+    if (bytes > MAX_BYTES) throw std::out_of_range("too many bits for State");
+}
+
+State::State(Packer &for_packer) : State(for_packer.state_bits())
+{
+}
+
+void State::set_byte(int index, byte data)
+{
+    if (index < 0 || index >= MAX_BYTES)
+        throw std::out_of_range("bad index for State");
+        
+    m_bytes[index] = data; 
+}
+
+byte State::get_byte(int index)
+{
+    if (index < 0 || index >= MAX_BYTES)
+        throw std::out_of_range("bad index for State");
+        
+    return m_bytes[index];
 }
     
-State::~State()
+bool State::get_bit(int bit)
 {
-    delete[] m_bytes;
+    if (bit < 0 || bit >= m_bits)
+        throw std::out_of_range("bad bit for State");
+        
+    int index = bit / 8;
+    
+    byte probe = 1 << (bit % 8);
+    
+    return (m_bytes[index] & probe) != 0;
 }

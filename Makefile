@@ -15,8 +15,9 @@ TESTBIN=$(subst .o,,$(TESTOBJ))
 INCLUDE=-Iinclude
 LIBRARY=lib/rubik.a
 
-CXXFLAGS=-O3 -DNDEBUG
-DEBUGFLAGS=-g
+COMMONFLAGS=-std=c++11
+CXXFLAGS=-O3 -DNDEBUG $(COMMONFLAGS)
+DEBUGFLAGS=-g $(COMMONFLAGS)
 
 DEPDIR:=.d
 $(shell mkdir -p $(DEPDIR)/src $(DEPDIR)/test)

@@ -9,7 +9,7 @@
 int main()
 {
     CubePacker packer;
-    CubeCache  cubes(packer.BITS);
+    CubeCache  cubes(packer.state_bits());
     
 	CacheBuilder cubeCacheBuilder(cubes, packer);
 	cubeCacheBuilder.verbose(true);

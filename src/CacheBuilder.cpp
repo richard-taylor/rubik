@@ -44,7 +44,7 @@ void CacheBuilder::depth_first(Cube cube, Scramble scramble, Cube::Twist twist)
     
     int turns = scramble.length();
     
-    State state(m_packer.state_bits());
+    State state(m_packer);
     m_packer.pack(cube, state);
     
     int status = m_cache.test_and_set(state, turns);
