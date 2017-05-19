@@ -2,6 +2,7 @@
 #ifndef CUBECACHE_H
 #define CUBECACHE_H
 
+#include <string>
 class State;
 
 class CubeCache
