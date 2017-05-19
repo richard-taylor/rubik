@@ -6,9 +6,8 @@
 
 State::State(int bits) : m_bits(bits)
 {
-    int bytes = bits / 8 + (bits % 8 == 0 ? 0 : 1);
-    
-    if (bytes > MAX_BYTES) throw std::out_of_range("too many bits for State");
+    if (bits > 8 * MAX_BYTES) 
+        throw std::out_of_range("too many bits for State");
 }
 
 State::State(Packer &for_packer) : State(for_packer.state_bits())
