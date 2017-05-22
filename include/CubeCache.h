@@ -16,8 +16,11 @@ public:
     the corner positions, or just some of the edge positions.
     
     Normally a Cube will be converted into a state using a Packer.
+    
+    The size of the backing table can also be set (if known).
     */
-    CubeCache(int stateBits);
+    CubeCache(int stateBits, int tableSize = 1000000);
+    ~CubeCache();
     
     int state_bits() const;
     
@@ -25,6 +28,16 @@ public:
     How many states are stored in the cache?
     */
     int count() const;
+    
+    /**
+    How much of the backing table was used?
+    
+    This is the smallest value which could have been passed in to
+    the constructor without error. It is also the value which wastes
+    least space. If a cache is saved to file and read back in, this is
+    the table size allocated.
+    */
+    int table_used() const;
     
     /**
     Set the minumum turn solution for a given cube state.
@@ -57,6 +70,12 @@ public:
      
 private:
     int m_stateBits;
+    int m_stateCount;
+
+    int m_tableSize;
+    int m_tableNextFree;
+    
+    unsigned int *m_table;
 };
 
 #endif

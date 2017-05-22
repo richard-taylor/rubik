@@ -1,11 +1,16 @@
 
 #include <cassert>
+#include <iostream>
+#include <stdexcept>
 #include "CubeCache.h"
 #include "State.h"
 
 int main()
 {
-    CubeCache cache(10);
+    // is an int 32 bits?
+    assert(sizeof(int) == 4);
+    
+    CubeCache cache(10, 2048);
     State state(10);
     
     for (int i = 0; i < 1024; i++)
@@ -37,4 +42,15 @@ int main()
 	assert(cache.test_and_set(state, 11) == -1);
 	assert(cache.count() == 1024);
 	assert(cache.solution(state) == 11);
+	
+	// too small a backing table throws an exception
+	CubeCache tiny(8, 8);
+	State state8(8);
+	try
+	{
+	    state8.set_byte(0, 0);
+	    tiny.test_and_set(state, 20);
+	    assert(false);
+	}
+	catch (std::overflow_error) {}
 }

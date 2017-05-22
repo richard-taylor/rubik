@@ -22,7 +22,7 @@ void State::set_byte(int index, byte data)
     m_bytes[index] = data; 
 }
 
-byte State::get_byte(int index)
+byte State::get_byte(int index) const
 {
     if (index < 0 || index >= MAX_BYTES)
         throw std::out_of_range("bad index for State");
@@ -30,7 +30,7 @@ byte State::get_byte(int index)
     return m_bytes[index];
 }
     
-bool State::get_bit(int bit)
+bool State::get_bit(int bit) const
 {
     if (bit < 0 || bit >= m_bits)
         throw std::out_of_range("bad bit for State");

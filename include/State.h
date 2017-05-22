@@ -13,9 +13,9 @@ public:
     State(Packer &for_packer);
     
     void set_byte(int index, byte data);
-    byte get_byte(int index);
+    byte get_byte(int index) const;
     
-    bool get_bit(int bit);
+    bool get_bit(int bit) const;
     
 private:
     static const int MAX_BYTES = 20;
