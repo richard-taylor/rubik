@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <sstream>
 #include <string>
-#include "CubeCache.h"
+#include "TrieCache.h"
 #include "CubePacker.h"
 #include "CacheBuilder.h"
 
@@ -18,13 +18,13 @@ std::string random_basename()
     return ss.str();
 }
 
-void test_cube_cache()
+void test_trie_cache()
 {
     std::string filename = random_basename();
     
     // construct a cube position cache of 3 moves
     CubePacker packer;
-    CubeCache  cubes(packer.state_bits());
+    TrieCache  cubes(packer.state_bits());
     
 	CacheBuilder cubeCacheBuilder(cubes, packer);
 	cubeCacheBuilder.build(3);
@@ -121,6 +121,6 @@ int main()
 {
     srand(time(NULL));
     
-    test_cube_cache();
+    test_trie_cache();
     test_corners_cache();
 }

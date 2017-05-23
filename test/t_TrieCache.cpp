@@ -2,15 +2,15 @@
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
-#include "CubeCache.h"
 #include "State.h"
+#include "TrieCache.h"
 
 int main()
 {
     // is an int 32 bits?
     assert(sizeof(int) == 4);
     
-    CubeCache cache(10, 2048);
+    TrieCache cache(10, 2048);
     State state(10);
     
     for (int i = 0; i < 1024; i++)
@@ -44,7 +44,7 @@ int main()
 	assert(cache.solution(state) == 11);
 	
 	// too small a backing table throws an exception
-	CubeCache tiny(8, 8);
+	TrieCache tiny(8, 8);
 	State state8(8);
 	try
 	{

@@ -2,12 +2,12 @@
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
-#include "CubeCache.h"
 #include "State.h"
+#include "TrieCache.h"
 
 const unsigned int UNUSED = 0xffffffff;
 
-CubeCache::CubeCache(int stateBits, int tableSize) 
+TrieCache::TrieCache(int stateBits, int tableSize) 
     : m_stateBits(stateBits), m_tableSize(tableSize)
 {
     m_stateCount = 0;
@@ -29,27 +29,27 @@ CubeCache::CubeCache(int stateBits, int tableSize)
     m_tableNextFree = 6;
 }
 
-CubeCache::~CubeCache()
+TrieCache::~TrieCache()
 {
     delete[] m_table;
 }
 
-int CubeCache::state_bits() const
+int TrieCache::state_bits() const
 {
     return m_stateBits;
 }
 
-int CubeCache::count() const
+int TrieCache::count() const
 {
     return m_stateCount;
 }
 
-int CubeCache::table_used() const
+int TrieCache::table_used() const
 {
     return m_tableNextFree;
 }
 
-int CubeCache::table_waste() const
+int TrieCache::table_waste() const
 {
     int n = 0;
     for (int i = 0; i < m_tableNextFree; i++)
@@ -60,7 +60,7 @@ int CubeCache::table_waste() const
     return n;
 }
 
-int CubeCache::test_and_set(const State &state, int turns)
+int TrieCache::test_and_set(const State &state, int turns)
 {
     int bit = 0;
     unsigned int position = 0;
@@ -72,7 +72,7 @@ int CubeCache::test_and_set(const State &state, int turns)
         if (m_table[slot] == UNUSED)
         {
             if (m_tableNextFree >= m_tableSize)
-                throw std::overflow_error("CubeCache table is too small.");
+                throw std::overflow_error("TrieCache table is too small.");
                 
             m_table[slot] = m_tableNextFree;
             m_tableNextFree += 2;
@@ -96,7 +96,7 @@ int CubeCache::test_and_set(const State &state, int turns)
     return (m_table[last] == turns) ? 0 : 1;
 }
     
-int CubeCache::solution(const State &state) const
+int TrieCache::solution(const State &state) const
 {
     int bit = 0;
     unsigned int position = 0;
@@ -115,7 +115,7 @@ int CubeCache::solution(const State &state) const
     return position;
 }
     
-bool CubeCache::save(const std::string filename)
+bool TrieCache::save(const std::string filename)
 {
     return false;
 }
