@@ -48,7 +48,18 @@ int CubeCache::table_used() const
 {
     return m_tableNextFree;
 }
-  
+
+int CubeCache::table_waste() const
+{
+    int n = 0;
+    for (int i = 0; i < m_tableNextFree; i++)
+    {
+        if (m_table[i] == UNUSED)
+            n++;
+    }
+    return n;
+}
+
 int CubeCache::test_and_set(const State &state, int turns)
 {
     int bit = 0;

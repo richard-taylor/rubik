@@ -38,6 +38,7 @@ public:
     the table size allocated.
     */
     int table_used() const;
+    int table_waste() const;
     
     /**
     Set the minumum turn solution for a given cube state.
