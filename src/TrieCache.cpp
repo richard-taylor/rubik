@@ -1,6 +1,6 @@
 
 #include <cstring>
-#include <iostream>
+#include <fstream>
 #include <stdexcept>
 #include "State.h"
 #include "TrieCache.h"
@@ -27,6 +27,34 @@ TrieCache::TrieCache(int stateBits, int tableSize)
     m_table[0] = 2;
     m_table[1] = 4;
     m_tableNextFree = 6;
+}
+
+TrieCache::TrieCache(const std::string filename)
+{
+    m_table = NULL;
+    
+    std::ifstream in(filename.c_str(), std::ios::binary);
+    if (in)
+    {
+        in.read((char*)&m_stateBits, sizeof(m_stateBits));
+        in.read((char*)&m_stateCount, sizeof(m_stateCount));
+        in.read((char*)&m_tableSize, sizeof(m_tableSize));
+        in.read((char*)&m_tableNextFree, sizeof(m_tableNextFree));
+        
+        m_table = new unsigned int[m_tableSize];
+        
+        in.read((char*)&m_table[0], m_tableSize * sizeof(unsigned int));
+    }
+    if (!in.good())
+    {
+        // the destructor will not be called if we throw in the constructor.
+        // so we have to clean up what we allocated first.
+        
+        if (m_table != NULL)
+            delete[] m_table;
+            
+        throw std::runtime_error("failed to load TrieCache");
+    }
 }
 
 TrieCache::~TrieCache()
@@ -119,5 +147,17 @@ int TrieCache::solution(const State &state) const
     
 bool TrieCache::save(const std::string filename)
 {
+    std::ofstream out(filename.c_str(), std::ios::binary);
+    if (out)
+    {
+        out.write((char*)&m_stateBits, sizeof(m_stateBits));
+        out.write((char*)&m_stateCount, sizeof(m_stateCount));
+        out.write((char*)&m_tableSize, sizeof(m_tableSize));
+        out.write((char*)&m_tableNextFree, sizeof(m_tableNextFree));
+        
+        out.write((char*)&m_table[0], m_tableSize * sizeof(unsigned int));
+        
+        return out.good();
+    }
     return false;
 }

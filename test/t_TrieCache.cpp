@@ -53,4 +53,15 @@ int main()
 	    assert(false);
 	}
 	catch (std::overflow_error) {}
+	
+	// save to file and reload into another cache
+	assert(cache.save("/tmp/t_TrieCache.binary"));
+	
+	TrieCache loaded("/tmp/t_TrieCache.binary");
+	assert(loaded.state_bits() == 10);
+	assert(loaded.count() == 1024);
+	assert(loaded.solution(state) == 11);
+	
+	assert(cache.table_used() == loaded.table_used());
+	assert(cache.table_waste() == loaded.table_waste());
 }

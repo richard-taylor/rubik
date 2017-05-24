@@ -21,6 +21,11 @@ public:
     TrieCache(int stateBits, int tableSize = 1000000);
     ~TrieCache();
     
+    /**
+    Load a previously saved cache.
+    */
+    TrieCache(const std::string filename);
+    
     int state_bits() const;
     
     /**
