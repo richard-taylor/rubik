@@ -1,0 +1,27 @@
+
+The position cache based on a trie structure has not been as successful as I
+hoped. This is partly because the first attempt at packing the cube state into
+a small number (97) of bits does not give much commonality at the start of
+the state vector.
+
+That seems to give a very sparse tree which is more like a lot of long strings
+than a tree.
+
+For example, storing all the positions up to 4 moves:
+
+ states = 46740
+ backing table = 6215194
+ 
+Since the table entries are 32 bits each, that is 4255 bits per state!
+ 
+Also, the table is only about 50% used, meaning that most nodes have only
+a single parent node and a single child node.
+ 
+But even if we recovered that lost space we would still have 2000 bits per
+state.
+ 
+As the cache gets more states the bits per state goes down, but is still
+too high to be useful.
+ 
+I think an analysis of the bit distributions in the states may give a better
+packing strategy that has more common substrings.
