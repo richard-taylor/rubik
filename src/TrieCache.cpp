@@ -87,13 +87,15 @@ int TrieCache::test_and_set(const State &state, int turns)
     {
         m_stateCount++;
     }
-        
-    if (m_table[last] > turns)
+    
+    unsigned int uturns = turns;
+    
+    if (m_table[last] > uturns)
     {
-        m_table[last] = turns;
+        m_table[last] = uturns;
         return -1;
     }
-    return (m_table[last] == turns) ? 0 : 1;
+    return (m_table[last] == uturns) ? 0 : 1;
 }
     
 int TrieCache::solution(const State &state) const

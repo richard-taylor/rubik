@@ -144,7 +144,7 @@ bool Scramble::read(std::istream &in, int length)
 
 bool Scramble::write(std::ostream &out) const
 {
-    for (int i = 0; i < twists.size(); i++)
+    for (unsigned int i = 0; i < twists.size(); i++)
     {
         out.write((char*)&twists[i], sizeof(Cube::Twist));
     }
