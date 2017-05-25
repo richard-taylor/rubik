@@ -34,6 +34,12 @@ public:
     int count() const;
     
     /**
+    What is the maximum turn depth stored in the cache?
+    */
+    int depth() const;
+    void depth(int max_turns);
+    
+    /**
     How much of the backing table was used?
     
     This is the smallest value which could have been passed in to
@@ -74,6 +80,7 @@ public:
     bool save(const std::string filename);
      
 private:
+    int m_depth;
     int m_stateBits;
     int m_stateCount;
 

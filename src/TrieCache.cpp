@@ -10,6 +10,7 @@ const unsigned int UNUSED = 0xffffffff;
 TrieCache::TrieCache(int stateBits, int tableSize) 
     : m_stateBits(stateBits), m_tableSize(tableSize)
 {
+    m_depth = 0;
     m_stateCount = 0;
     
     if (m_tableSize & 1)
@@ -36,6 +37,7 @@ TrieCache::TrieCache(const std::string filename)
     std::ifstream in(filename.c_str(), std::ios::binary);
     if (in)
     {
+        in.read((char*)&m_depth, sizeof(m_depth));
         in.read((char*)&m_stateBits, sizeof(m_stateBits));
         in.read((char*)&m_stateCount, sizeof(m_stateCount));
         in.read((char*)&m_tableSize, sizeof(m_tableSize));
@@ -72,6 +74,16 @@ int TrieCache::count() const
     return m_stateCount;
 }
 
+int TrieCache::depth() const
+{
+    return m_depth;
+}
+
+void TrieCache::depth(int max_turns)
+{
+    m_depth = max_turns;
+}
+    
 int TrieCache::table_used() const
 {
     return m_tableNextFree;
@@ -150,6 +162,7 @@ bool TrieCache::save(const std::string filename)
     std::ofstream out(filename.c_str(), std::ios::binary);
     if (out)
     {
+        out.write((char*)&m_depth, sizeof(m_depth));
         out.write((char*)&m_stateBits, sizeof(m_stateBits));
         out.write((char*)&m_stateCount, sizeof(m_stateCount));
         out.write((char*)&m_tableSize, sizeof(m_tableSize));

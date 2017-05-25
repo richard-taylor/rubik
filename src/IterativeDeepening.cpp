@@ -1,17 +1,23 @@
 
 #include <iostream>
 #include <stack>
+#include "CubePacker.h"
 #include "IterativeDeepening.h"
+#include "State.h"
 
 #define SAY(X) std::cout << X << std::endl;
 
-/*
 IterativeDeepening::IterativeDeepening()
 {
-    //cubes = new CubeCache("cache/tmp_cubes");
-    //corners = new CornersCache("cache/tmp_corners");
+    m_cubes = NULL;
 }
 
+void IterativeDeepening::set_position_cache(const CubeCache &positions)
+{
+    m_cubes = &positions;
+}
+
+/*
 bool IterativeDeepening::can_solve_in_less(int moves, const Cube &cube) const
 {
     if (moves >= corners->depth())
@@ -97,19 +103,39 @@ Scramble IterativeDeepening::try_depth(int depth, const Cube &cube) const
     SAY("no solution after " << tests << " tests.");
     return Scramble();
 }
+*/
 
 Scramble IterativeDeepening::solve(const Cube &cube) const
 {
-    if (cubes->contains(cube))
-        return cubes->solution(cube);
- 
-    for (int depth = cubes->depth() + 1; depth <= MAX_MOVES; depth++)
+    if (cube.solved())
+        return Scramble();
+    
+    int start_depth = 1;
+     
+    if (m_cubes != NULL)
     {
-        Scramble solution = try_depth(depth, cube);
+        CubePacker packer;
+        State state(packer.state_bits());
+        
+        packer.pack(cube, state);
+        
+        int turns = m_cubes->solution(state);
+        
+        if (turns > 0)
+        {
+            SAY("The solution is a cached position with " << turns << " turns.");
+            return Scramble();
+        }
+        start_depth = m_cubes->depth() + 1;
+    }
+ 
+    for (int depth = start_depth; depth <= MAX_MOVES; depth++)
+    {
+        SAY("Looking for a solution with " << depth << " turns.");
+        Scramble solution;// = try_depth(depth, cube);
         
         if (solution.length() > 0)
             return solution;
     }       
     return Scramble();
 }
-*/

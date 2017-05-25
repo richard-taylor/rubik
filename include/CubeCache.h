@@ -28,6 +28,12 @@ public:
     virtual int count() const = 0;
     
     /**
+    What is the maximum turn depth stored in the cache?
+    */
+    virtual int depth() const = 0;
+    virtual void depth(int max_turns) = 0;
+    
+    /**
     Set the minumum turn solution for a given cube state.
     
     Turns must be between 0 and 20.

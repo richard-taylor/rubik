@@ -99,4 +99,6 @@ void CacheBuilder::build(int depth)
             depth_first(cube, scramble, Cube::Twist(f, t));
         }
     }
+    
+    m_cache.depth(depth);
 }

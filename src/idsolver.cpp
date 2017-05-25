@@ -1,8 +1,9 @@
 
 #include <ctime>
 #include <iostream>
-#include "IterativeDeepening.h"
 #include "CubeConstants.h"
+#include "IterativeDeepening.h"
+#include "TrieCache.h"
 
 void report(const Scramble &scramble, clock_t initialisation, clock_t solving)
 {
@@ -14,19 +15,25 @@ void report(const Scramble &scramble, clock_t initialisation, clock_t solving)
 int main()
 {
     Cube cube;
-    cube.twist(D2); cube.twist(R);  cube.twist(L);  cube.twist(B);  cube.twist(F);
-    cube.twist(Ri); cube.twist(F);  cube.twist(U2); cube.twist(Li); cube.twist(Bi);
-    cube.twist(U2); cube.twist(Li); cube.twist(R2); cube.twist(Bi); cube.twist(R);
+    cube.twist(D2); cube.twist(R); cube.twist(L);  cube.twist(B);  //cube.twist(F);
+    //cube.twist(Ri); cube.twist(F);  cube.twist(U2); cube.twist(Li); cube.twist(Bi);
+    //cube.twist(U2); cube.twist(Li); cube.twist(R2); cube.twist(Bi); cube.twist(R);
     //cube.twist(U2); cube.twist(L);  cube.twist(B);  cube.twist(Ui); cube.twist(Di);
     //cube.twist(Bi); cube.twist(Ui); cube.twist(F2); cube.twist(D);  cube.twist(Ri);
     
     clock_t start = clock();
     
-    //IterativeDeepening solver;
+    // load the caches
+    TrieCache positions("cubes-cache.binary");
+    
+    // set up the solver
+    IterativeDeepening solver;
+    solver.set_position_cache(positions);
     //
     clock_t initialised = clock();
-    
-    Scramble solution;// = solver.solve(cube);
+ 
+    // run the solver   
+    Scramble solution = solver.solve(cube);
     //
     clock_t solved = clock();
     
