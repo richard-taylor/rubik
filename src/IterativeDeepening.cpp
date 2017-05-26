@@ -30,7 +30,7 @@ bool IterativeDeepening::can_solve_in_less(int moves, const Cube &cube) const
     }
     return false;
 }
-
+*/
 struct Position
 {
     Cube cube;
@@ -39,8 +39,9 @@ struct Position
 
 Scramble IterativeDeepening::try_depth(int depth, const Cube &cube) const
 {
-    SAY("trying depth " << depth);
-    
+    CubePacker packer;
+    State state(packer.state_bits());
+        
     std::stack<Position> stack;
     Position position;
     
@@ -50,6 +51,8 @@ Scramble IterativeDeepening::try_depth(int depth, const Cube &cube) const
     stack.push(position);
     int tests = 0;
     
+    int test_depth = (m_cubes == NULL) ? 0 : m_cubes->depth();
+    
     while (!stack.empty())
     {
         position = stack.top();
@@ -58,43 +61,50 @@ Scramble IterativeDeepening::try_depth(int depth, const Cube &cube) const
         int moves = position.scramble.length();
         int remaining = depth - moves;
         
-        if (remaining <= cubes->depth())
+        if (remaining <= test_depth)
         {
             // test this position
             ++tests;
             
-            if (cubes->contains(position.cube))
+            if (m_cubes == NULL)
             {
-                position.scramble.append(cubes->solution(position.cube));
-                return position.scramble;
+                if (position.cube.solved())
+                {
+                    return position.scramble;
+                }
+            }
+            else
+            {
+                packer.pack(position.cube, state);
+        
+                int turns = m_cubes->solution(state);
+        
+                if (turns > 0)
+                {
+                    //position.scramble.append(cubes->solution(position.cube));
+                    return position.scramble;
+                }
             }
         }
         else
         {
             // add another twist
-            Cube::Twist twist = position.scramble.last();
 
-            int lastFace = (twist == noTwist) ? -1 : twist.getFace();
-            
-            Position next;
-            
-            for (int f = 0; f < 6; f++)
+            for (Cube::Face f = Cube::L; f <= Cube::B; f = Cube::Face(f + 1))
             {
-                if (cant_follow(lastFace, f))
-                    continue;
-                    
-                for (int t = 1; t <= 3; t++)
+                if (position.scramble.can_add(f))
                 {
-                    Cube::Twist next_twist((Cube::Face)f, t);
-                
-                    next.cube = position.cube;
-                    next.cube.twist(next_twist);
-                
-                    next.scramble = position.scramble;
-                    next.scramble.add(next_twist);
-                    
-                    if (can_solve_in_less(remaining, next.cube))
+                    for (int t = 1; t <= 3; t++)
+                    {
+                        Cube::Twist twist = Cube::Twist(f, t);
+                        
+                        Position next = position;
+                        
+                        next.cube.twist(twist);
+                        next.scramble.add(twist);
+                        
                         stack.push(next);
+                    }
                 }
             }
         }
@@ -103,12 +113,14 @@ Scramble IterativeDeepening::try_depth(int depth, const Cube &cube) const
     SAY("no solution after " << tests << " tests.");
     return Scramble();
 }
-*/
 
 Scramble IterativeDeepening::solve(const Cube &cube) const
 {
     if (cube.solved())
+    {
+        SAY("The cube is already solved.");
         return Scramble();
+    }
     
     int start_depth = 1;
      
@@ -132,10 +144,11 @@ Scramble IterativeDeepening::solve(const Cube &cube) const
     for (int depth = start_depth; depth <= MAX_MOVES; depth++)
     {
         SAY("Looking for a solution with " << depth << " turns.");
-        Scramble solution;// = try_depth(depth, cube);
+        Scramble solution = try_depth(depth, cube);
         
         if (solution.length() > 0)
             return solution;
-    }       
-    return Scramble();
+    }
+    SAY("No solution could be found.");       
+    throw std::runtime_error("no solution found for this cube");
 }
