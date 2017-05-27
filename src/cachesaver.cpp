@@ -2,22 +2,20 @@
 #include <iostream>
 #include "CacheBuilder.h"
 #include "CubePacker.h"
-#include "TrieCache.h"
+#include "UnorderedMapCache.h"
 
 void cube_cache()
 {
     CubePacker packer;
-    TrieCache  cubes(packer.state_bits(), 6215194);
+    UnorderedMapCache cubes(packer.state_bits());
     
 	CacheBuilder cubeCacheBuilder(cubes, packer);
 	cubeCacheBuilder.verbose(true);
-	cubeCacheBuilder.build(4);
+	cubeCacheBuilder.build(6);
 	
-	cubes.save("cubes-cache.binary");
+	cubes.save("cubes-cache-4.binary");
 	
 	std::cout << "saved cube positions = " << cubes.count() << std::endl;
-	std::cout << "table size = " << cubes.table_used() << std::endl;
-	std::cout << "table over = " << cubes.table_waste() << std::endl;
 }
 
 int main()
