@@ -3,7 +3,7 @@
 #include <iostream>
 #include "CubeConstants.h"
 #include "IterativeDeepening.h"
-#include "TrieCache.h"
+#include "UnorderedMapCache.h"
 
 void report(const Scramble &scramble, clock_t initialisation, clock_t solving)
 {
@@ -17,14 +17,14 @@ int main()
     Cube cube;
     cube.twist(D2); cube.twist(R); cube.twist(L); cube.twist(B); cube.twist(F);
     cube.twist(Ri); cube.twist(F);  cube.twist(U2); cube.twist(Li); cube.twist(Bi);
-    //cube.twist(U2); cube.twist(Li); cube.twist(R2); cube.twist(Bi); cube.twist(R);
+    cube.twist(U2); cube.twist(Li); //cube.twist(R2); cube.twist(Bi); cube.twist(R);
     //cube.twist(U2); cube.twist(L);  cube.twist(B);  cube.twist(Ui); cube.twist(Di);
     //cube.twist(Bi); cube.twist(Ui); cube.twist(F2); cube.twist(D);  cube.twist(Ri);
     
     clock_t start = clock();
     
     // load the caches
-    TrieCache positions("cubes-cache.binary");
+    UnorderedMapCache positions("cubes-cache-6.binary");
     
     // set up the solver
     IterativeDeepening solver;

@@ -13,7 +13,7 @@ void cube_cache()
 	cubeCacheBuilder.verbose(true);
 	cubeCacheBuilder.build(6);
 	
-	cubes.save("cubes-cache-4.binary");
+	cubes.save("cubes-cache-6.binary");
 	
 	std::cout << "saved cube positions = " << cubes.count() << std::endl;
 }

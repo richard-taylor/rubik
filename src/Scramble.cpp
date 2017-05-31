@@ -38,6 +38,9 @@ void Scramble::add(Cube::Twist twist)
 
 bool Scramble::can_add(Cube::Face face) const
 {
+    if (twists.size() == 0)
+        return true;
+        
     Cube::Face previous = last().getFace();
     
     if (face == previous)

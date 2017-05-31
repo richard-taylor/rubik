@@ -5,11 +5,19 @@
 #include "State.h"
 #include "UnorderedMapCache.h"
 
-int bits_to_bytes(int bits)
+inline int bits_to_bytes(int bits)
 {
     int bytes = bits / 8;  // if bits is an exact multiple of 8
     
     return (bytes * 8 < bits) ? bytes + 1 : bytes;
+}
+
+inline void bytes_to_string(const byte bytes[], std::string &string)
+{
+    for (unsigned int i = 0; i < string.length(); i++)
+    {
+        string[i] = bytes[i];
+    }
 }
 
 UnorderedMapCache::UnorderedMapCache(int stateBits) : m_stateBits(stateBits)
@@ -28,8 +36,22 @@ UnorderedMapCache::UnorderedMapCache(const std::string filename)
         
         m_stateBytes = bits_to_bytes(m_stateBits);
         
-        //in.read((char*)&m_stateCount, sizeof(m_stateCount));
-        //in.read((char*)&m_table[0], m_tableSize * sizeof(unsigned int));
+        int stateCount;
+        in.read((char*)&stateCount, sizeof(stateCount));
+
+        m_map.reserve(stateCount);
+        
+        std::string key(m_stateBytes, '\0');
+        byte record[m_stateBytes + 1];
+        
+        while (stateCount--)
+        {
+            in.read((char*)&record[0], m_stateBytes + 1);
+            
+            bytes_to_string(record, key);
+    
+            m_map.insert(std::make_pair(key, record[m_stateBytes]));
+        }
     }
     if (!in.good())
     {
@@ -57,7 +79,7 @@ void UnorderedMapCache::depth(int max_turns)
     m_depth = max_turns;
 }
 
-void state_to_string(const State &state, std::string &string)
+inline void state_to_string(const State &state, std::string &string)
 {
     for (unsigned int i = 0; i < string.length(); i++)
     {
@@ -111,9 +133,18 @@ bool UnorderedMapCache::save(const std::string filename)
     {
         out.write((char*)&m_depth, sizeof(m_depth));
         out.write((char*)&m_stateBits, sizeof(m_stateBits));
-        //out.write((char*)&m_stateCount, sizeof(m_stateCount));
-        //out.write((char*)&m_table[0], m_tableSize * sizeof(unsigned int));
         
+        int stateCount = m_map.size();       
+        out.write((char*)&stateCount, sizeof(stateCount));
+        
+        for (auto const& item : m_map)
+        {
+            auto const& key = item.first;
+            auto const& value = item.second;
+            
+            out.write(key.data(), m_stateBytes);
+            out.write((char*)&value, 1);
+        }       
         return out.good();
     }
     return false;
