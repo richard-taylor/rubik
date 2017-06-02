@@ -50,6 +50,7 @@ private:
     bool m_verbose;
     bool m_store;
     int m_depth;
+    long m_tests;
 };
 
 #endif

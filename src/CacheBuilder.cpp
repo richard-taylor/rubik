@@ -41,7 +41,9 @@ void CacheBuilder::depth_first(Cube cube, Scramble scramble, Cube::Twist twist)
 {
     cube.twist(twist);
     scramble.add(twist);
-    
+   
+    m_tests++;
+ 
     int turns = scramble.length();
     
     State state(m_packer);
@@ -57,9 +59,9 @@ void CacheBuilder::depth_first(Cube cube, Scramble scramble, Cube::Twist twist)
         // the scramble so far... if we are storing all the twists.
     }
     
-    if (m_verbose && (m_cache.count() % 10000 == 0))
+    if (m_verbose && (m_tests % 100000 == 0))
     {
-        SAY("cached positions = " << m_cache.count());
+        SAY(m_tests << " tests : cached positions = " << m_cache.count());
     }
     
     // descend further if turns was less than the previously stored value,
@@ -86,6 +88,7 @@ void CacheBuilder::depth_first(Cube cube, Scramble scramble, Cube::Twist twist)
 void CacheBuilder::build(int depth)
 {
     m_depth = depth;
+    m_tests = 0;
     
     Cube cube;
     Scramble scramble;
