@@ -20,6 +20,10 @@ public:
     
     /**
     */
+    void set_orientation_cache(const CubeCache &orientations);
+    
+    /**
+    */
     Scramble solve(const Cube &cube) const;
     
     /**
@@ -29,7 +33,7 @@ public:
     
 private:
     const CubeCache *m_cubes;
-    CubeCache *corners;
+    const CubeCache *m_orients;
     
     Scramble try_depth(int depth, const Cube &cube) const;
     bool can_solve_in_less(int moves, const Cube &cube) const;

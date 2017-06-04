@@ -3,7 +3,9 @@
 #include <iostream>
 #include "CubeConstants.h"
 #include "IterativeDeepening.h"
+#include "OrientPacker.h"
 #include "UnorderedMapCache.h"
+#include "State.h"
 
 void report(const Scramble &scramble, clock_t initialisation, clock_t solving)
 {
@@ -25,10 +27,17 @@ int main()
     
     // load the caches
     UnorderedMapCache positions("cubes-cache-6.binary");
+    UnorderedMapCache orientations("orients-cache-6.binary");
     
     // set up the solver
     IterativeDeepening solver;
     solver.set_position_cache(positions);
+    solver.set_orientation_cache(orientations);
+    
+    OrientPacker packer;
+    State state(packer);
+    packer.pack(cube, state);
+    std::cout << "orient map for scrambled cube is " << orientations.solution(state) << std::endl;
     //
     clock_t initialised = clock();
  

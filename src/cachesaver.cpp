@@ -26,15 +26,16 @@ void orient_cache()
     
     CacheBuilder cacheBuilder(orients, packer);
     cacheBuilder.verbose(true);
-    cacheBuilder.build(12);
+    cacheBuilder.keep_descending(true);
+    cacheBuilder.build(6);
 	
-    orients.save("orients-cache-12.binary");
+    orients.save("orients-cache-6.binary");
 	
     std::cout << "saved orients positions = " << orients.count() << std::endl;
 }
 
 int main()
 {
-    //cube_cache();
+    cube_cache();
     orient_cache();
 }

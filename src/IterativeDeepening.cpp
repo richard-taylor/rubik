@@ -3,6 +3,7 @@
 #include <stack>
 #include "CubePacker.h"
 #include "IterativeDeepening.h"
+#include "OrientPacker.h"
 #include "State.h"
 
 #define SAY(X) std::cout << X << std::endl;
@@ -10,6 +11,7 @@
 IterativeDeepening::IterativeDeepening()
 {
     m_cubes = NULL;
+    m_orients = NULL;
 }
 
 void IterativeDeepening::set_position_cache(const CubeCache &positions)
@@ -17,20 +19,33 @@ void IterativeDeepening::set_position_cache(const CubeCache &positions)
     m_cubes = &positions;
 }
 
-/*
+void IterativeDeepening::set_orientation_cache(const CubeCache &orientations)
+{
+    m_orients = &orientations;
+}
+
 bool IterativeDeepening::can_solve_in_less(int moves, const Cube &cube) const
 {
-    if (moves >= corners->depth())
+    int deepest = m_orients->depth() + 1;
+    SAY("can_solve_in_less : deepest " << deepest << " moves " << moves);
+    
+    if (moves > deepest)
         return true;
         
-    while (--moves >= 0)
-    {
-        if (corners->contains(cube, moves))
-            return true;
-    }
-    return false;
+    OrientPacker packer;
+    State state(packer.state_bits());
+    
+    packer.pack(cube, state);
+        
+    int turns = m_orients->solution(state);
+                
+    if (turns < 0)
+        turns = deepest;
+    
+    SAY("can_solve_in_less : is " << turns << " less than " << moves);
+    return turns < moves;
 }
-*/
+
 struct Position
 {
     Cube cube;
@@ -49,7 +64,8 @@ Scramble IterativeDeepening::try_depth(int depth, const Cube &cube) const
     position.scramble = Scramble();
     
     stack.push(position);
-    int tests = 0;
+    long tests = 0;
+    long pruned = 0;
     
     int test_depth = (m_cubes == NULL) ? 0 : m_cubes->depth();
     
@@ -70,6 +86,7 @@ Scramble IterativeDeepening::try_depth(int depth, const Cube &cube) const
             {
                 if (position.cube.solved())
                 {
+                    SAY(tests << " tests. " << pruned << " pruned.");
                     return position.scramble;
                 }
             }
@@ -82,35 +99,44 @@ Scramble IterativeDeepening::try_depth(int depth, const Cube &cube) const
                 if (turns > 0)
                 {
                     //position.scramble.append(cubes->solution(position.cube));
+                    SAY(tests << " tests. " << pruned << " pruned.");
                     return position.scramble;
                 }
             }
         }
         else
         {
-            // add another twist
-
-            for (Cube::Face f = Cube::L; f <= Cube::B; f = Cube::Face(f + 1))
+            if (m_orients == NULL || can_solve_in_less(remaining + 1, position.cube))
             {
-                if (position.scramble.can_add(f))
+                // add another twist
+
+                for (Cube::Face f = Cube::L; f <= Cube::B; f = Cube::Face(f + 1))
                 {
-                    for (int t = 1; t <= 3; t++)
+                    if (position.scramble.can_add(f))
                     {
-                        Cube::Twist twist = Cube::Twist(f, t);
+                        for (int t = 1; t <= 3; t++)
+                        {
+                            Cube::Twist twist = Cube::Twist(f, t);
                         
-                        Position next = position;
+                            Position next = position;
                         
-                        next.cube.twist(twist);
-                        next.scramble.add(twist);
+                            next.cube.twist(twist);
+                            next.scramble.add(twist);
                         
-                        stack.push(next);
+                            stack.push(next);
+                        }
                     }
                 }
+            }
+            else
+            {
+                pruned++;
             }
         }
     }
     // didn't find a solution
-    SAY("no solution after " << tests << " tests.");
+    SAY(tests << " tests. " << pruned << " pruned.");
+    SAY("no solution.");
     return Scramble();
 }
 

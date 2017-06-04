@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include "OrientPacker.h"
 #include "Cube.h"
 #include "State.h"
@@ -49,4 +50,9 @@ void OrientPacker::pack(const Cube &cube, State &state)
                                                    ((edges[8] & B0) << 2) |
                                                    ((edges[9] & B0) << 1) |
                                                    (edges[10] & B0));
+                                                   
+    /*std::cout << "orient state " << int(state.get_byte(0)) << " "
+                                 <<  int(state.get_byte(1)) << " "
+                                 <<  int(state.get_byte(2)) << " "
+                                 <<  int(state.get_byte(3)) << std::endl;*/
 }

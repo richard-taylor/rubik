@@ -13,7 +13,8 @@ CacheBuilder::CacheBuilder(CubeCache &cache, Packer &packer)
     : m_cache(cache),
       m_packer(packer), 
       m_verbose(false),
-      m_store(false)
+      m_store(false),
+      m_descending(false)
 {
 }
 
@@ -36,7 +37,17 @@ bool CacheBuilder::store_twists() const
 {
     return m_store;
 }
+ 
+void CacheBuilder::keep_descending(bool descending)
+{
+    m_descending = descending;
+}
     
+bool CacheBuilder::keep_descending() const
+{
+    return m_descending;
+}
+   
 void CacheBuilder::depth_first(Cube cube, Scramble scramble, Cube::Twist twist)
 {
     cube.twist(twist);
@@ -51,6 +62,7 @@ void CacheBuilder::depth_first(Cube cube, Scramble scramble, Cube::Twist twist)
     
     int status = m_cache.test_and_set(state, turns);
 
+    //SAY("status for " << scramble.toString() << " is " << status);
     bool store_twists = (m_store && status <= 0);
     
     if (store_twists)
@@ -66,8 +78,10 @@ void CacheBuilder::depth_first(Cube cube, Scramble scramble, Cube::Twist twist)
     
     // descend further if turns was less than the previously stored value,
     // or if it was equal and we are storing all the ways to get to a state.
+    // 
+    // or if we need to try all combinations of moves for a sub-state.
         
-    if (status < 0 || store_twists)
+    if (status < 0 || store_twists || m_descending)
     {
         if (scramble.length() < m_depth)
         {
