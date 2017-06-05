@@ -27,7 +27,7 @@ void IterativeDeepening::set_orientation_cache(const CubeCache &orientations)
 bool IterativeDeepening::can_solve_in_less(int moves, const Cube &cube) const
 {
     int deepest = m_orients->depth() + 1;
-    SAY("can_solve_in_less : deepest " << deepest << " moves " << moves);
+    //SAY("can_solve_in_less : deepest " << deepest << " moves " << moves);
     
     if (moves > deepest)
         return true;
@@ -42,7 +42,7 @@ bool IterativeDeepening::can_solve_in_less(int moves, const Cube &cube) const
     if (turns < 0)
         turns = deepest;
     
-    SAY("can_solve_in_less : is " << turns << " less than " << moves);
+    //SAY("can_solve_in_less : is " << turns << " less than " << moves);
     return turns < moves;
 }
 
@@ -66,6 +66,7 @@ Scramble IterativeDeepening::try_depth(int depth, const Cube &cube) const
     stack.push(position);
     long tests = 0;
     long pruned = 0;
+    long pushed = 0;
     
     int test_depth = (m_cubes == NULL) ? 0 : m_cubes->depth();
     
@@ -86,7 +87,7 @@ Scramble IterativeDeepening::try_depth(int depth, const Cube &cube) const
             {
                 if (position.cube.solved())
                 {
-                    SAY(tests << " tests. " << pruned << " pruned.");
+                    SAY(tests << " tests. " << pruned << " pruned. " << pushed << " pushed.");
                     return position.scramble;
                 }
             }
@@ -99,7 +100,7 @@ Scramble IterativeDeepening::try_depth(int depth, const Cube &cube) const
                 if (turns > 0)
                 {
                     //position.scramble.append(cubes->solution(position.cube));
-                    SAY(tests << " tests. " << pruned << " pruned.");
+                    SAY(tests << " tests. " << pruned << " pruned. " << pushed << " pushed.");
                     return position.scramble;
                 }
             }
@@ -124,6 +125,7 @@ Scramble IterativeDeepening::try_depth(int depth, const Cube &cube) const
                             next.scramble.add(twist);
                         
                             stack.push(next);
+                            pushed++;
                         }
                     }
                 }
@@ -135,7 +137,7 @@ Scramble IterativeDeepening::try_depth(int depth, const Cube &cube) const
         }
     }
     // didn't find a solution
-    SAY(tests << " tests. " << pruned << " pruned.");
+    SAY(tests << " tests. " << pruned << " pruned. " << pushed << " pushed.");
     SAY("no solution.");
     return Scramble();
 }
