@@ -2,6 +2,7 @@
 #include <iostream>
 #include "CacheBuilder.h"
 #include "CubePacker.h"
+#include "HalfCutPacker.h"
 #include "OrientPacker.h"
 #include "UnorderedMapCache.h"
 
@@ -34,8 +35,24 @@ void orient_cache()
     std::cout << "saved orients positions = " << orients.count() << std::endl;
 }
 
+void half_cut_cache()
+{
+    HalfCutPacker packer;
+    UnorderedMapCache cache(packer.state_bits());
+    
+    CacheBuilder cacheBuilder(cache, packer);
+    cacheBuilder.verbose(true);
+    cacheBuilder.keep_descending(true);
+    cacheBuilder.build(9);
+	
+    //cache.save("half-cut-cache-6.binary");
+	
+    std::cout << "saved positions = " << cache.count() << std::endl;
+}
+
 int main()
 {
-    cube_cache();
-    orient_cache();
+    //cube_cache();
+    //orient_cache();
+    half_cut_cache();
 }

@@ -71,7 +71,7 @@ void CacheBuilder::depth_first(Cube cube, Scramble scramble, Cube::Twist twist)
         // the scramble so far... if we are storing all the twists.
     }
     
-    if (m_verbose && (m_tests % 100000 == 0))
+    if (m_verbose && (m_tests % 1000000 == 0))
     {
         SAY(m_tests << " tests : cached positions = " << m_cache.count());
     }
