@@ -27,6 +27,8 @@ class Edge
 public:
     enum Orientation { OOO, UOO, OUO, UUO, OOU, UOU, OUU, UUU };
 
+    Edge() { /* for uninitilised arrays */ }
+
     Edge(int index, Orientation orientation = OOO);
 
     int getIndex() const;

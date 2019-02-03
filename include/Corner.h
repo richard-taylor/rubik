@@ -25,6 +25,8 @@ class Corner
 public:
     enum Orientation { XYZ, XZY, YXZ, YZX, ZXY, ZYX };
 
+    Corner() { /* for uninitilised arrays */ }
+
     Corner(int index, Orientation orientation = XYZ);
 
     int getIndex() const;

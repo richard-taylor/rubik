@@ -32,4 +32,11 @@ int main() {
         assert(solved[i].getIndex() == i);
         assert(solved[i].getOrientation() == Edge::OOO);
     }
+
+    // An uninitialised array
+    Edge array[12];
+    for (int i = 0; i < 12; i++)
+    {
+        array[i] = Edge(i);
+    }
 }

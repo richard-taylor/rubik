@@ -32,4 +32,11 @@ int main() {
         assert(solved[i].getIndex() == i);
         assert(solved[i].getOrientation() == Corner::XYZ);
     }
+
+    // An uninitialised array
+    Corner array[8];
+    for (int i = 0; i < 8; i++)
+    {
+        array[i] = Corner(i);
+    }
 }
