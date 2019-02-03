@@ -1,13 +1,6 @@
 
 #include <cassert>
-#include <cstring>
-#include <iostream>
 #include "Twist.h"
-
-Twist::Twist()
-{
-    twist = 0;
-}
 
 Twist::Twist(Face face, int turns)
 {

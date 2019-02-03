@@ -29,7 +29,7 @@ int main() {
     Twist B2(BACK, 2);
     Twist B3(BACK, 3);
 
-    // Constants are defined for convenience
+    // Constants are defined for convenience (test equality)
     assert(L1 == L);
     assert(L2 == L2);
     assert(L3 == Li);
@@ -53,4 +53,37 @@ int main() {
     assert(B1 == B);
     assert(B2 == B2);
     assert(B3 == Bi);
+
+    // Everything has an inverse
+    assert(L3 == L.inverse());
+    assert(L2 == L2.inverse());
+    assert(L1 == Li.inverse());
+
+    assert(R3 == R.inverse());
+    assert(R2 == R2.inverse());
+    assert(R1 == Ri.inverse());
+
+    assert(U3 == U.inverse());
+    assert(U2 == U2.inverse());
+    assert(U1 == Ui.inverse());
+
+    assert(D3 == D.inverse());
+    assert(D2 == D2.inverse());
+    assert(D1 == Di.inverse());
+
+    assert(F3 == F.inverse());
+    assert(F2 == F2.inverse());
+    assert(F1 == Fi.inverse());
+
+    assert(B3 == B.inverse());
+    assert(B2 == B2.inverse());
+    assert(B1 == Bi.inverse());
+
+    // Getters (not exhaustive)
+    assert(L1.getFace() == LEFT && L1.getTurns() == 1);
+    assert(R2.getFace() == RIGHT && R2.getTurns() == 2);
+    assert(U3.getFace() == UP && U3.getTurns() == 3);
+    assert(D1.getFace() == DOWN && D1.getTurns() == 1);
+    assert(F2.getFace() == FRONT && F2.getTurns() == 2);
+    assert(B3.getFace() == BACK && B3.getTurns() == 3);
 }

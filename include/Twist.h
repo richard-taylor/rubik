@@ -2,7 +2,7 @@
 #ifndef TWIST_H
 #define TWIST_H
 
-#include "Face.h"
+#include "Enums.h"
 #include "Typedefs.h"
 
 /**
@@ -13,7 +13,6 @@ This is the standard outer-block metric.
 class Twist
 {
 public:
-    Twist();
     Twist(Face face, int turns);
 
     Face getFace() const;
