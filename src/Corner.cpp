@@ -22,10 +22,12 @@ Corner::Orientation Corner::getOrientation() const
 // about each axis. The first array dimension is the axis (x, y, z) and the
 // second array dimension is the current orientation.
 //
-Corner::Orientation rotations[3][6] = {
-  {Corner::XZY,Corner::XYZ,Corner::ZXY,Corner::ZYX,Corner::YXZ,Corner::YZX},
-  {Corner::ZYX,Corner::ZXY,Corner::YZX,Corner::YXZ,Corner::XZY,Corner::XYZ},
-  {Corner::YXZ,Corner::YZX,Corner::XYZ,Corner::XZY,Corner::ZYX,Corner::ZXY}
+static Corner::Orientation rotations[3][6] = {
+
+{Corner::XZY,Corner::XYZ,Corner::ZXY,Corner::ZYX,Corner::YXZ,Corner::YZX},
+{Corner::ZYX,Corner::ZXY,Corner::YZX,Corner::YXZ,Corner::XZY,Corner::XYZ},
+{Corner::YXZ,Corner::YZX,Corner::XYZ,Corner::XZY,Corner::ZYX,Corner::ZXY}
+
 };
 
 Corner Corner::rotate90(Axis axis) const

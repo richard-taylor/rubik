@@ -4,14 +4,14 @@
 #include "Cube.h"
 #include "CubeCache.h"
 #include "Packer.h"
-#include "Scramble.h"
+#include "Sequence.h"
 #include "State.h"
 
 #define SAY(X) if (m_verbose) { std::cout << X << std::endl; }
 
 CacheBuilder::CacheBuilder(CubeCache &cache, Packer &packer)
     : m_cache(cache),
-      m_packer(packer), 
+      m_packer(packer),
       m_verbose(false),
       m_store(false),
       m_descending(false)
@@ -32,66 +32,66 @@ void CacheBuilder::store_twists(bool store)
 {
     m_store = store;
 }
-    
+
 bool CacheBuilder::store_twists() const
 {
     return m_store;
 }
- 
+
 void CacheBuilder::keep_descending(bool descending)
 {
     m_descending = descending;
 }
-    
+
 bool CacheBuilder::keep_descending() const
 {
     return m_descending;
 }
-   
-void CacheBuilder::depth_first(Cube cube, Scramble scramble, Cube::Twist twist)
+
+void CacheBuilder::depth_first(Cube cube, Sequence scramble, Twist twist)
 {
     cube.twist(twist);
     scramble.add(twist);
-   
+
     m_tests++;
- 
+
     int turns = scramble.length();
-    
+
     State state(m_packer);
     m_packer.pack(cube, state);
-    
+
     int status = m_cache.test_and_set(state, turns);
 
     //SAY("status for " << scramble.toString() << " is " << status);
     bool store_twists = (m_store && status <= 0);
-    
+
     if (store_twists)
     {
         // this is a better or equal way to get to this state so store
         // the scramble so far... if we are storing all the twists.
     }
-    
+
     if (m_verbose && (m_tests % 1000000 == 0))
     {
         SAY(m_tests << " tests : cached positions = " << m_cache.count());
     }
-    
+
     // descend further if turns was less than the previously stored value,
     // or if it was equal and we are storing all the ways to get to a state.
-    // 
+    //
     // or if we need to try all combinations of moves for a sub-state.
-        
+
     if (status < 0 || store_twists || m_descending)
     {
         if (scramble.length() < m_depth)
         {
-            for (Cube::Face f = Cube::L; f <= Cube::B; f = Cube::Face(f + 1))
+            for (int f = 0; f < 6; f++)
             {
-                if (scramble.can_add(f))
+                if (scramble.nextFace(Face(f)))
                 {
                     for (int t = 1; t <= 3; t++)
                     {
-                        depth_first(cube, scramble, Cube::Twist(f, t));
+                        depth_first(cube, scramble, Twist(Face(f), t));
                     }
                 }
             }
@@ -103,19 +103,19 @@ void CacheBuilder::build(int depth)
 {
     m_depth = depth;
     m_tests = 0;
-    
+
     Cube cube;
-    Scramble scramble;
-    
+    Sequence scramble;
+
     // start with each possible face and turn combination
-    	
-    for (Cube::Face f = Cube::L; f <= Cube::B; f = Cube::Face(f + 1))
+
+    for (int f = 0; f <6 ; f++)
     {
         for (int t = 1; t <= 3; t++)
         {
-            depth_first(cube, scramble, Cube::Twist(f, t));
+            depth_first(cube, scramble, Twist(Face(f), t));
         }
     }
-    
+
     m_cache.depth(depth);
 }

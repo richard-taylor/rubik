@@ -11,6 +11,6 @@ void Scrambler::scramble(Cube &cube, const Sequence &twists) const
 {
     for (auto t = twists.begin(); t != twists.end(); ++t)
     {
-        cube.twist(t);
+        cube.twist(*t);
     }
 }
