@@ -13,6 +13,8 @@ This is the standard outer-block metric.
 class Twist
 {
 public:
+    Twist() { /* for uninitilised arrays */ }
+
     Twist(Face face, int turns);
 
     Face getFace() const;

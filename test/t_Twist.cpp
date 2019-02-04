@@ -86,4 +86,10 @@ int main() {
     assert(D1.getFace() == DOWN && D1.getTurns() == 1);
     assert(F2.getFace() == FRONT && F2.getTurns() == 2);
     assert(B3.getFace() == BACK && B3.getTurns() == 3);
+
+    // An uninitialised array
+    Twist array[3];
+    array[0] = Twist(LEFT, 1);
+    array[1] = Twist(LEFT, 2);
+    array[2] = Twist(LEFT, 3);
 }
