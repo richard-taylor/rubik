@@ -124,4 +124,17 @@ int main()
     sexy_test(F, D);
     sexy_test(L, D);
     sexy_test(B, D);
+
+    // check individual corners and edges
+    Cube c8e12;
+    assert(c8e12.cornerSolved(RUF));
+    assert(c8e12.edgeSolved(RU));
+    assert(c8e12.cornerSolved(LUF));
+    assert(c8e12.edgeSolved(LU));
+
+    c8e12.twist(R2);
+    assert(!c8e12.cornerSolved(RUF));
+    assert(!c8e12.edgeSolved(RU));
+    assert(c8e12.cornerSolved(LUF));
+    assert(c8e12.edgeSolved(LU));
 }

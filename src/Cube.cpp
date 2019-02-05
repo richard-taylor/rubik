@@ -212,3 +212,13 @@ bool Cube::operator<(const Cube &other) const
     else
         return (cornerCmp < 0);
 }
+
+bool Cube::cornerSolved(Corner slot) const
+{
+    return corners[slot.getIndex()] == slot;
+}
+
+bool Cube::edgeSolved(Edge slot) const
+{
+    return edges[slot.getIndex()] == slot;
+}

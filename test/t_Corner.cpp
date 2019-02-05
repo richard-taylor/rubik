@@ -2,8 +2,8 @@
 #include <cassert>
 #include "Corner.h"
 
-int main() {
-
+int main()
+{
     // Default orientation is XYZ
     Corner corner(0);
     assert(corner.getOrientation() == Corner::XYZ);

@@ -39,6 +39,16 @@ public:
     */
     bool operator<(const Cube &other) const;
 
+    /**
+    Is a particular corner solved?
+    */
+    bool cornerSolved(Corner slot) const;
+
+    /**
+    Is a particular edge solved?
+    */
+    bool edgeSolved(Edge slot) const;
+
 private:
     Corner corners[8];
     Edge edges[12];
