@@ -1,11 +1,9 @@
 
-#include <iostream>
 #include <set>
 #include <stack>
 #include "CubePattern.h"
 #include "IterativeDeepening.h"
-
-#define SAY(X) std::cout << X << std::endl;
+#include "Logging.h"
 
 IterativeDeepening::IterativeDeepening()
 {
@@ -48,7 +46,7 @@ Sequence IterativeDeepening::try_depth(int depth,
 
             if (pattern.on(position.cube))
             {
-                SAY(tests << " tests. " << pushed << " pushed.");
+                LOG_DEBUG << tests << " tests. " << pushed << " pushed.";
                 return position.twists;
             }
         }
@@ -80,8 +78,8 @@ Sequence IterativeDeepening::try_depth(int depth,
         }
     }
     // didn't find a solution
-    SAY(tests << " tests. " << pushed << " pushed.");
-    SAY("no solution.");
+    LOG_DEBUG << tests << " tests. " << pushed << " pushed.";
+    LOG_DEBUG << "no solution.";
     return Sequence();
 }
 
@@ -90,18 +88,17 @@ Sequence IterativeDeepening::solve(const Cube &cube,
 {
     if (pattern.on(cube))
     {
-        SAY("The pattern is already solved.");
+        LOG_INFO << "The pattern is already solved.";
         return Sequence();
     }
 
     for (int depth = 1; depth <= MAX_MOVES; depth++)
     {
-        SAY("Looking for a solution with " << depth << " turns.");
+        LOG_INFO << "Looking for a solution with " << depth << " turns.";
         Sequence solution = try_depth(depth, cube, pattern);
 
         if (solution.length() > 0)
             return solution;
     }
-    SAY("No solution could be found.");
     throw std::runtime_error("No solution found for this cube.");
 }
