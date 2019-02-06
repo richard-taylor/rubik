@@ -6,13 +6,15 @@
 #include "Sequence.h"
 
 /**
-Class that can convert between strings and twist sequences.
+Class that can convert between character strings and twist sequences.
 */
 class SequenceString
 {
 public:
     SequenceString(const Sequence &sequence);
+    SequenceString(const char *string);
 
+    operator Sequence() const;
     operator const char*() const;
 
 private:

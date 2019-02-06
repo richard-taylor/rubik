@@ -1,55 +1,55 @@
 
 #include <ctime>
-#include <iostream>
 #include <stdexcept>
 #include "Block2x2x2.h"
 #include "IterativeDeepening.h"
+#include "Logging.h"
+#include "Scrambler.h"
 #include "Sequence.h"
 #include "SequenceString.h"
 
-void report(const Sequence &solution, clock_t solving)
+void report(const std::vector<Sequence> &solutions, clock_t solving)
 {
-    std::cout << "solving time: " << (((float)solving)/CLOCKS_PER_SEC) << std::endl;
-    std::cout << "solution: " << SequenceString(solution) << std::endl;
+    LOG_INFO << "solving time: " << (((float)solving)/CLOCKS_PER_SEC);
+    LOG_REPORT << "solutions:";
+    for (auto s = solutions.begin(); s != solutions.end(); ++s)
+    {
+        LOG_REPORT << "    " << SequenceString(*s);
+    }
 }
 
-int main()
+int main(int argc, char* argv[0])
 {
+    Log::setLevel(Log::INFO);
+
+    if (argc != 2)
+    {
+        LOG_ERROR << "usage: " << argv[0] << " scramble-string";
+        return 1;
+    }
+
     Cube cube;
-    cube.twist(D2);
-    cube.twist(F);
-    cube.twist(Ri);
-    cube.twist(F2);
-    cube.twist(Ri);
-    cube.twist(Fi);
-    cube.twist(U2);
-    cube.twist(B);
-    cube.twist(R);
-    cube.twist(U2);
-    cube.twist(R2);
-    cube.twist(Ui);
-    cube.twist(L2);
-    cube.twist(Di);
-    cube.twist(L2);
-    cube.twist(B2);
-    cube.twist(D);
-    cube.twist(L2);
-    cube.twist(U2);
+    Scrambler scrambler;
+
+    try
+    {
+        Sequence twists = SequenceString(argv[1]);
+        scrambler.scramble(cube, twists);
+    }
+    catch (const std::invalid_argument &e)
+    {
+        LOG_ERROR << "Could not parse the scramble \"" << argv[1] << "\".";
+        LOG_ERROR << e.what();
+        return 1;
+    }
 
     clock_t start = clock();
 
     IterativeDeepening solver;
     Block2x2x2 pattern;
 
-    try
-    {
-        Sequence solution = solver.solve(cube, pattern);
+    std::vector<Sequence> solutions = solver.allSolutions(cube, pattern);
 
-        clock_t solved = clock();
-        report(solution, solved - start);
-    }
-    catch (const std::runtime_error &e)
-    {
-        std::cout << "No solution found." << std::endl;
-    }
+    clock_t solved = clock();
+    report(solutions, solved - start);
 }
