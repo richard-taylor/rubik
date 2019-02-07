@@ -21,10 +21,27 @@ solving anything...
 
 ## 3x3x3
 
-There are some ideas from the 2x2x2 that I want to work on for 3x3x3 cubes;
-but I am doing it in C++ because the scale of the problem is so much bigger.
+On the 3x3x3 cube I am interested in tools to help me practise the
+Fewest Moves Challenge (FMC). These are in C++ because the scale of
+the problem is so much bigger.
 
-Also, I am going to pre-calculate the cache... because it will probably
-take a long time. Maybe I could run it as microservice somewhere?
+For example, the tool block222 will find all the shortest ways to make
+a 2x2x2 block somewhere on the cube with a given scramble:
 
-RT
+    bin/block222 "F R2 B2 D2 B2 U' R2 U L2 U B2 U' L B' F2"
+    INFO: Looking for a solution with 1 turns.
+    INFO: Looking for a solution with 2 turns.
+    INFO: Looking for a solution with 3 turns.
+    INFO: Looking for a solution with 4 turns.
+    INFO: Looking for a solution with 5 turns.
+    INFO: solving time: 0.963218
+    solutions:
+        B2 D B2 D2 R2
+        B L B' D2 R2
+        B L R2 U2 F
+        F2 L D' F2 R2
+        D2 B L B' R2
+        D B2 D B2 R2
+        U D2 F' D F
+
+Here it finds 7 different ways to get a 2x2x2 block in 5 twists.
