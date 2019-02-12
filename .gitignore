@@ -23,9 +23,9 @@
 *.lib
 
 # Executables
-*.exe
-*.out
-*.app
+bin/*
+test/t_*
+!test/t_*.cpp
 
 # Editor backups
 *~
