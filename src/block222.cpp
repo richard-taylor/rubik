@@ -11,8 +11,8 @@
 
 void report(const std::vector<Sequence> &solutions, bool inverse, clock_t solving)
 {
-    LOG_INFO << "solving time: " << (((float)solving)/CLOCKS_PER_SEC) << " seconds.";
-    LOG_REPORT << "solutions:";
+    LOG_INFO << "Solving time: " << (((float)solving)/CLOCKS_PER_SEC) << " seconds.";
+    LOG_REPORT << "Solutions:";
     for (auto s = solutions.begin(); s != solutions.end(); ++s)
     {
         if (inverse)
