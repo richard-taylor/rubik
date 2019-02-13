@@ -9,20 +9,36 @@
 #include "Sequence.h"
 #include "SequenceString.h"
 
-void report(const std::vector<Sequence> &solutions, clock_t solving)
+void report(const std::vector<Sequence> &solutions, bool inverse, clock_t solving)
 {
     LOG_INFO << "solving time: " << (((float)solving)/CLOCKS_PER_SEC) << " seconds.";
     LOG_REPORT << "solutions:";
     for (auto s = solutions.begin(); s != solutions.end(); ++s)
     {
-        LOG_REPORT << "    " << SequenceString(*s);
+        if (inverse)
+        {
+            LOG_REPORT << "    " << SequenceString(*s)
+                       << "    (" << SequenceString(s->inverse()) << ")";
+        }
+        else
+        {
+            LOG_REPORT << "    " << SequenceString(*s);
+        }
     }
 }
 
 int main(int argc, const char* argv[0])
 {
     Log::setLevel(Log::INFO);
-    std::string help = "[--help] [-i] scramble-string";
+    std::string help = R"([options] scramble-string
+
+  Options:
+    -h or --help    : print this help text.
+    -i or --inverse : use the inverse of the scramble.
+
+  scramble-string:
+    A cube scramble in standard notation, e.g. " R U' F2 L D B' "
+)";
 
     Options args(argc, argv);
 
@@ -37,13 +53,23 @@ int main(int argc, const char* argv[0])
         return 1;
     }
 
+    bool inverse = (args.has("-i") || args.has("--inverse"));
+
     Cube cube;
     Scrambler scrambler;
     std::string scramble = args.position(0);
     try
     {
         Sequence twists = SequenceString(scramble);
-        scrambler.scramble(cube, twists);
+
+        if (inverse)
+        {
+            scrambler.scramble(cube, twists.inverse());
+        }
+        else
+        {
+            scrambler.scramble(cube, twists);
+        }
     }
     catch (const std::invalid_argument &e)
     {
@@ -60,5 +86,5 @@ int main(int argc, const char* argv[0])
     std::vector<Sequence> solutions = solver.allSolutions(cube, pattern);
 
     clock_t solved = clock();
-    report(solutions, solved - start);
+    report(solutions, inverse, solved - start);
 }
