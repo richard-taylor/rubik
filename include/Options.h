@@ -36,7 +36,10 @@ public:
     int positionals() const;
     std::string position(int index) const;
 
+    std::string usage(const std::string &help) const;
+
 private:
+    std::string command;
     std::set<std::string> switchSet;
     std::vector<std::string> positionalList;
 };

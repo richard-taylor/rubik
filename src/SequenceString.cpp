@@ -32,9 +32,9 @@ static const std::map<std::string, Twist> twist = {
     {"L'", Li}, {"R'", Ri}, {"U'", Ui}, {"D'", Di}, {"F'", Fi}, {"B'", Bi}
 };
 
-SequenceString::SequenceString(const char *characters)
+SequenceString::SequenceString(const std::string &string)
 {
-    std::istringstream stream(characters);
+    std::istringstream stream(string);
     std::string word;
 
     while (stream >> word)

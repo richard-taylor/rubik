@@ -3,6 +3,8 @@
 
 Options::Options(int argc, const char *argv[])
 {
+    command = argv[0];
+
     for (int i = 1; i < argc; i++)
     {
         const char *arg = argv[i];
@@ -36,4 +38,9 @@ int Options::positionals() const
 std::string Options::position(int index) const
 {
     return positionalList[index];
+}
+
+std::string Options::usage(const std::string &help) const
+{
+    return "usage: " + command + " " + help;
 }

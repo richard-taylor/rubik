@@ -12,7 +12,7 @@ class SequenceString
 {
 public:
     SequenceString(const Sequence &sequence);
-    SequenceString(const char *string);
+    SequenceString(const std::string &string);
 
     operator Sequence() const;
     operator const char*() const;
