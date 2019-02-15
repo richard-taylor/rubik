@@ -39,3 +39,8 @@ bool Corner::operator==(const Corner &other) const
 {
     return (corner == other.corner);
 }
+
+bool Corner::operator<(const Corner &other) const
+{
+    return (corner < other.corner);
+}

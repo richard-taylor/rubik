@@ -39,3 +39,8 @@ bool Edge::operator==(const Edge &other) const
 {
     return (edge == other.edge);
 }
+
+bool Edge::operator<(const Edge &other) const
+{
+    return (edge < other.edge);
+}

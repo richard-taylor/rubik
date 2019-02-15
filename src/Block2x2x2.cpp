@@ -2,7 +2,8 @@
 #include "Block2x2x2.h"
 #include "Cube.h"
 
-static inline bool block(const Cube &cube, Corner c, Edge e1, Edge e2, Edge e3)
+static inline bool block(const Cube &cube,
+                         CornerSlot c, EdgeSlot e1, EdgeSlot e2, EdgeSlot e3)
 {
     return cube.cornerSolved(c) &&
            cube.edgeSolved(e1) &&

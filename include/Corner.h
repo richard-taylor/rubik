@@ -33,19 +33,12 @@ public:
     Orientation getOrientation() const;
 
     Corner rotate90(Axis axis) const;
+
     bool operator==(const Corner &other) const;
+    bool operator<(const Corner &other) const;
 
 private:
     byte corner;
 };
-
-const Corner RUF(0);
-const Corner LUF(1);
-const Corner LUB(2);
-const Corner RUB(3);
-const Corner RDF(4);
-const Corner LDF(5);
-const Corner LDB(6);
-const Corner RDB(7);
 
 #endif

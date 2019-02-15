@@ -137,4 +137,21 @@ int main()
     assert(!c8e12.edgeSolved(RU));
     assert(c8e12.cornerSolved(LUF));
     assert(c8e12.edgeSolved(LU));
+
+    // randomised cubes should be different
+    Cube solved;
+    Cube random1 = solved.randomise();
+    Cube random2 = solved.randomise();
+
+    assert(random1 != solved);
+    assert(random2 != solved);
+    assert(random1 != random2);
+
+    // randomise while keeping 2 corners and 2 edges fixed
+    Cube random3 = solved.randomise({ RUF, LUF }, { RU, UF });
+    assert(!random3.solved());
+    assert(random3.cornerSolved(RUF));
+    assert(random3.cornerSolved(LUF));
+    assert(random3.edgeSolved(RU));
+    assert(random3.edgeSolved(UF));
 }

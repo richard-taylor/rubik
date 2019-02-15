@@ -35,23 +35,12 @@ public:
     Orientation getOrientation() const;
 
     Edge rotate90(Axis axis) const;
+
     bool operator==(const Edge &other) const;
+    bool operator<(const Edge &other) const;
 
 private:
     byte edge;
 };
-
-const Edge RU(0);
-const Edge UF(1);
-const Edge LU(2);
-const Edge UB(3);
-const Edge RF(4);
-const Edge LF(5);
-const Edge LB(6);
-const Edge RB(7);
-const Edge RD(8);
-const Edge DF(9);
-const Edge LD(10);
-const Edge DB(11);
 
 #endif
