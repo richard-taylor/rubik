@@ -1,5 +1,4 @@
 
-#include <set>
 #include <stack>
 #include "CubePattern.h"
 #include "IterativeDeepening.h"
@@ -19,7 +18,6 @@ std::vector<Sequence> IterativeDeepening::try_depth(
     int depth, bool firstOnly, const Cube &cube, const CubePattern &pattern) const
 {
     std::vector<Sequence> results;
-    std::set<Cube> seen;
     std::stack<Position> stack;
     Position position;
 
@@ -65,16 +63,10 @@ std::vector<Sequence> IterativeDeepening::try_depth(
                         Position next = position;
 
                         next.cube.twist(twist);
+                        next.twists.add(twist);
 
-                        if (seen.find(next.cube) == seen.end())
-                        {
-                            next.twists.add(twist);
-
-                            stack.push(next);
-                            pushed++;
-
-                            seen.insert(next.cube);
-                        }
+                        stack.push(next);
+                        pushed++;
                     }
                 }
             }
