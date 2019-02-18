@@ -20,6 +20,12 @@ public:
 
     virtual bool on(const Cube &cube) const;
 
+    /**
+    If the pattern exists on the cube then return the middle solved edge.
+    Otherwise throw an invalid_argument exception.
+    */
+    EdgeSlot middleEdge(const Cube &cube) const;
+
 private:
     CornerSlot corners[3][2];
     EdgeSlot edges[3][5];
