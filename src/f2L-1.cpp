@@ -7,27 +7,10 @@
 #include "IterativeDeepening.h"
 #include "Logging.h"
 #include "Options.h"
+#include "Report.h"
 #include "Scrambler.h"
 #include "Sequence.h"
 #include "SequenceString.h"
-
-void report(const std::vector<Sequence> &solutions, bool inverse, clock_t solving)
-{
-    LOG_INFO << "Solving time: " << (((float)solving)/CLOCKS_PER_SEC) << " seconds.";
-    LOG_REPORT << "Solutions:";
-    for (auto s = solutions.begin(); s != solutions.end(); ++s)
-    {
-        if (inverse)
-        {
-            LOG_REPORT << "    " << SequenceString(*s)
-                       << "    (" << SequenceString(s->inverse()) << ")";
-        }
-        else
-        {
-            LOG_REPORT << "    " << SequenceString(*s);
-        }
-    }
-}
 
 int main(int argc, const char* argv[0])
 {
