@@ -42,11 +42,8 @@ std::vector<Sequence> IterativeDeepening::try_depth(
         {
             ++tests;
 
-            if (pattern.on(position.cube))
+            if (pattern.search(position.cube, position.twists, results))
             {
-                LOG_DEBUG << tests << " tests. " << pushed << " pushed.";
-                results.push_back(position.twists);
-
                 if (firstOnly)
                     return results;
             }
@@ -77,19 +74,34 @@ std::vector<Sequence> IterativeDeepening::try_depth(
     return results;
 }
 
+static std::vector<Sequence> asIs(const Cube &cube, const CubePattern &pattern)
+{
+    std::vector<Sequence> results;
+
+    if (pattern.search(cube, Sequence(), results))
+    {
+        if (results[0].length() < 1)
+        {
+            LOG_INFO << "The pattern is already solved.";
+        }
+    }
+    return results;
+}
+
 Sequence IterativeDeepening::solve(const Cube &cube,
                                    const CubePattern &pattern) const
 {
-    if (pattern.on(cube))
+    std::vector<Sequence> solutions = asIs(cube, pattern);
+
+    if (solutions.size() > 0)
     {
-        LOG_INFO << "The pattern is already solved.";
-        return Sequence();
+        return solutions[0];
     }
 
     for (int depth = 1; depth <= MAX_MOVES; depth++)
     {
         LOG_INFO << "Looking for a solution with " << depth << " turns.";
-        std::vector<Sequence> solutions = try_depth(depth, true, cube, pattern);
+        solutions = try_depth(depth, true, cube, pattern);
 
         if (solutions.size() > 0)
             return solutions[0];
@@ -100,16 +112,17 @@ Sequence IterativeDeepening::solve(const Cube &cube,
 std::vector<Sequence> IterativeDeepening::allSolutions(
     const Cube &cube, const CubePattern &pattern) const
 {
-    if (pattern.on(cube))
+    std::vector<Sequence> solutions = asIs(cube, pattern);
+
+    if (solutions.size() > 0)
     {
-        LOG_INFO << "The pattern is already solved.";
-        return std::vector<Sequence>(1);
+        return solutions;
     }
 
     for (int depth = 1; depth <= MAX_MOVES; depth++)
     {
         LOG_INFO << "Looking for a solution with " << depth << " turns.";
-        std::vector<Sequence> solutions = try_depth(depth, false, cube, pattern);
+        solutions = try_depth(depth, false, cube, pattern);
 
         if (solutions.size() > 0)
             return solutions;
