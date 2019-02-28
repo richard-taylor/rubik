@@ -37,6 +37,8 @@ public:
     bool operator==(const Corner &other) const;
     bool operator<(const Corner &other) const;
 
+    std::size_t hash() const;
+
 private:
     byte corner;
 };

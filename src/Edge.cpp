@@ -44,3 +44,8 @@ bool Edge::operator<(const Edge &other) const
 {
     return (edge < other.edge);
 }
+
+std::size_t Edge::hash() const
+{
+    return edge;
+}

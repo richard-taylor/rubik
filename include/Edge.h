@@ -39,6 +39,8 @@ public:
     bool operator==(const Edge &other) const;
     bool operator<(const Edge &other) const;
 
+    std::size_t hash() const;
+
 private:
     byte edge;
 };

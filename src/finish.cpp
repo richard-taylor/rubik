@@ -17,7 +17,7 @@ int main(int argc, const char* argv[0])
 
 Finish off a partially solved cube, optimally. This program is not
 optimised for arbitrary cube states so it will be slow to process
-positions that are more than 8 moves from a solution.
+positions that are more than 12 moves from a solution.
 
   Options:
     -h or --help    : print this help text.
@@ -68,7 +68,7 @@ positions that are more than 8 moves from a solution.
     clock_t start = clock();
 
     IterativeDeepening solver;
-    Finished pattern;
+    Finished pattern(5);
 
     std::vector<Sequence> solutions = solver.allSolutions(cube, pattern);
 

@@ -44,3 +44,8 @@ bool Corner::operator<(const Corner &other) const
 {
     return (corner < other.corner);
 }
+
+std::size_t Corner::hash() const
+{
+    return corner;
+}
