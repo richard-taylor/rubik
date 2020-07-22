@@ -35,6 +35,22 @@ Edge Edge::rotate90(Axis axis) const
     return Edge(getIndex(), rotations[axis][getOrientation()]);
 }
 
+bool Edge::isOriented(Axis axis) const
+{
+    int oriented = getOrientation();
+    
+    switch (axis)
+    {
+        case X:
+            return (oriented & 1) == 0;
+        case Y:
+            return (oriented & 2) == 0;
+        case Z:
+            return (oriented & 4) == 0;
+    }
+    return false;
+}
+
 bool Edge::operator==(const Edge &other) const
 {
     return (edge == other.edge);

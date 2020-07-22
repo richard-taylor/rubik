@@ -35,6 +35,7 @@ public:
     Orientation getOrientation() const;
 
     Edge rotate90(Axis axis) const;
+    bool isOriented(Axis axis) const;
 
     bool operator==(const Edge &other) const;
     bool operator<(const Edge &other) const;
