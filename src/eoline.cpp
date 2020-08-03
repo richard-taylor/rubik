@@ -10,6 +10,15 @@
 #include "Sequence.h"
 #include "SequenceString.h"
 
+int countBad(const Cube &cube)
+{
+    int bad = 0;
+    for (int i = 0; i < 12; i++)
+      if (!cube.edgeSlot(EdgeSlot(i)).isOriented(Z))
+        bad++;
+    return bad;
+}
+
 int main(int argc, const char* argv[0])
 {
     Log::setLevel(Log::INFO);
@@ -17,7 +26,7 @@ int main(int argc, const char* argv[0])
 
   Options:
     -h or --help    : print this help text.
-    -i or --inverse : use the inverse of the scramble.
+    -b or --bad     : use a random scramble with this number of bad edges.
 
   scramble-string:
     A cube scramble in standard notation, e.g. " R U' F2 L D B' "
@@ -30,35 +39,42 @@ int main(int argc, const char* argv[0])
         LOG_REPORT << args.usage(help);
         return 1;
     }
+
+    bool random = args.has("-b") || args.has("--bad");
+
     if (args.positionals() != 1)
     {
         LOG_ERROR << args.usage(help);
         return 1;
     }
 
-    bool inverse = (args.has("-i") || args.has("--inverse"));
-
     Cube cube;
-    Scrambler scrambler;
-    std::string scramble = args.position(0);
-    try
-    {
-        Sequence twists = SequenceString(scramble);
 
-        if (inverse)
+    if (random)
+    {
+        int wanted = std::stoi(args.position(0));
+        int bad = -1;
+        while (bad != wanted)
         {
-            scrambler.scramble(cube, twists.inverse());
-        }
-        else
-        {
-            scrambler.scramble(cube, twists);
+            cube = cube.randomise();
+            bad = countBad(cube);
         }
     }
-    catch (const std::invalid_argument &e)
+    else
     {
-        LOG_ERROR << "Could not parse the scramble \"" << scramble << "\".";
-        LOG_ERROR << e.what();
-        return 1;
+        Scrambler scrambler;
+        std::string scramble = args.position(0);
+        try
+        {
+            Sequence twists = SequenceString(scramble);
+            scrambler.scramble(cube, twists);
+        }
+        catch (const std::invalid_argument &e)
+        {
+            LOG_ERROR << "Could not parse the scramble \"" << scramble << "\".";
+            LOG_ERROR << e.what();
+            return 1;
+        }
     }
 
     clock_t start = clock();
@@ -69,5 +85,5 @@ int main(int argc, const char* argv[0])
     std::vector<Sequence> solutions = solver.allSolutions(cube, pattern);
 
     clock_t solved = clock();
-    report(solutions, inverse, solved - start);
+    report(solutions, false, solved - start);
 }
