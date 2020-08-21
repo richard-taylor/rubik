@@ -83,7 +83,12 @@ int main(int argc, const char* argv[0])
     EOLine pattern;
 
     std::vector<Sequence> solutions = solver.allSolutions(cube, pattern);
-
     clock_t solved = clock();
+
+    if (random && !solutions.empty())
+    {
+        LOG_REPORT << "Scramble:\n    "
+                   << SequenceString(solutions[0].inverse());
+    }
     report(solutions, false, solved - start);
 }
