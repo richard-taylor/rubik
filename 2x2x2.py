@@ -228,13 +228,13 @@ def depth_first(cube, unscramble, move, turn, max_depth, cache, cache_depth):
 	
 	if remaining == 0:
 		if cube.solved():
-			print "solution:", str(unscramble)
+			print("solution:", str(unscramble))
 			solutions = 1
 	elif remaining == cache_depth:
 		state = cube.state_key()
 		if state in cache:
 			for finish in cache[state]:
-				print "solution:", str(unscramble), str(finish)
+				print("solution:", str(unscramble), str(finish))
 				solutions += 1
 	else:
 		for m in moves:
@@ -316,11 +316,11 @@ def find_solutions(cube):
 	
 	cache_depth = 5
 	cache = pre_calculate(cache_depth)
-	print "cache at depth", cache_depth, "has", len(cache.keys()), "positions."
+	print("cache at depth", cache_depth, "has", len(cache.keys()), "positions.")
 	
 	while solutions < 1 and n < 11:
 		n += 1
-		print "depth", n
+		print("depth", n)
 		solutions = descend(cube, n, cache, cache_depth)
 
 	end = time.time()
@@ -330,7 +330,7 @@ def find_solutions(cube):
 	else:
 		solstring = 'solutions'
 
-	print "found", solutions, solstring, "with", n, "turns in", (end-now), "seconds"
+	print("found", solutions, solstring, "with", n, "turns in", (end-now), "seconds")
 	return n
 
 def test_two_cube():
@@ -338,33 +338,33 @@ def test_two_cube():
 	# 6 cycles of R U R' U' gets us back to solved
 	for s in range(6):
 		cube.twist('R', 1)
-		print cube.state_key(), cube.solved()
+		print(cube.state_key(), cube.solved())
 		cube.twist('U', 1)
-		print cube.state_key(), cube.solved()
+		print(cube.state_key(), cube.solved())
 		cube.twist('R', 3)
-		print cube.state_key(), cube.solved()
+		print(cube.state_key(), cube.solved())
 		cube.twist('U', 3)
-		print cube.state_key(), cube.solved()
+		print(cube.state_key(), cube.solved())
 		
 def solve_scramble(scramble_string):
-	print "Python 2x2x2 cube solver."
+	print("Python 2x2x2 cube solver.")
 
 	cube = TwoCube()
 
 	scramble = Scramble.from_string(scramble_string)
-	print "scramble:", str(scramble)
+	print("scramble:", str(scramble))
 
 	apply_scramble(cube, scramble)
 
 	return find_solutions(cube)
 
 def solve_random_scramble():
-	print "Python 2x2x2 cube solver."
+	print("Python 2x2x2 cube solver.")
 
 	cube = TwoCube()
 
 	scramble = Scramble(['R', 'U', 'F'], 20)
-	print "scramble:", str(scramble)
+	print("scramble:", str(scramble))
 
 	apply_scramble(cube, scramble)
 
@@ -380,11 +380,15 @@ def random_scramble_distribution():
     while counts[3] < 1 or counts[10] < 1:
         n = solve_random_scramble()
         counts[n - 1] += 1
-        print "distribution:", str(counts)
+        print("distribution:", str(counts))
     
 # main
 
 #test_two_cube()
-solve_random_scramble()
+#solve_random_scramble()
 #random_scramble_distribution()
 
+if len(sys.argv) == 2:
+    solve_scramble(sys.argv[1])
+else:
+    print("usage: python 2x2x2.py <scramble>")
