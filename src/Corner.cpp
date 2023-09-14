@@ -35,6 +35,22 @@ Corner Corner::rotate90(Axis axis) const
     return Corner(getIndex(), rotations[axis][getOrientation()]);
 }
 
+bool Corner::isOriented(Axis axis) const
+{
+    int oriented = getOrientation();
+    
+    switch (axis)
+    {
+        case X:
+            return oriented == 0 || oriented == 1;
+        case Y:
+            return oriented == 0 || oriented == 5;
+        case Z:
+            return oriented == 0 || oriented == 2;
+    }
+    return false;
+}
+
 bool Corner::operator==(const Corner &other) const
 {
     return (corner == other.corner);

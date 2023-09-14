@@ -37,6 +37,8 @@ public:
     Edge rotate90(Axis axis) const;
     bool isOriented(Axis axis) const;
 
+    bool in(int A, int B, int C, int D) const;
+
     bool operator==(const Edge &other) const;
     bool operator<(const Edge &other) const;
 

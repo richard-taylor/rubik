@@ -33,6 +33,7 @@ public:
     Orientation getOrientation() const;
 
     Corner rotate90(Axis axis) const;
+    bool isOriented(Axis axis) const;
 
     bool operator==(const Corner &other) const;
     bool operator<(const Corner &other) const;

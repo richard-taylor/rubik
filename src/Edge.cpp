@@ -51,6 +51,12 @@ bool Edge::isOriented(Axis axis) const
     return false;
 }
 
+bool Edge::in(int A, int B, int C, int D) const
+{
+    int i = getIndex();
+    return i == A || i == B || i == C || i == D;
+}
+
 bool Edge::operator==(const Edge &other) const
 {
     return (edge == other.edge);
