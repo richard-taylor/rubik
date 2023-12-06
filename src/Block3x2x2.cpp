@@ -50,7 +50,7 @@ Block3x2x2::Block3x2x2(CornerSlot fixedCorner)
         case RDF:
             set(corners[0], RDF, LDF, edges[0], DF, RD, RF, LD, LF);
             set(corners[1], RDF, RUF, edges[1], RF, RD, DF, RU, UF);
-            set(corners[2], RDF, RDB, edges[2], RD, DF, RF, RD, DB);
+            set(corners[2], RDF, RDB, edges[2], RD, DF, RF, RB, DB);
             break;
         case LDF:
             set(corners[0], LDF, RDF, edges[0], DF, LD, LF, RD, RF);
