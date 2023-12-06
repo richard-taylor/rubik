@@ -6,6 +6,18 @@
 
 IterativeDeepening::IterativeDeepening()
 {
+    all_turns_allowed = true;
+    for (int f = 0; f < 6; f++)
+        for (int t = 0; t < 3; t++)
+            turn_allowed[f][t] = true;
+}
+
+void IterativeDeepening::only_allow_doubles(Face face)
+{
+    all_turns_allowed = false;
+    turn_allowed[face][0] = false;    // 1 turn
+    turn_allowed[face][1] = true;     // 2 turns
+    turn_allowed[face][2] = false;    // 3 turns
 }
 
 struct Position
@@ -56,14 +68,17 @@ std::vector<Sequence> IterativeDeepening::try_depth(
                 {
                     for (int t = 1; t <= 3; t++)
                     {
-                        Twist twist = Twist(Face(f), t);
-                        Position next = position;
+                        if (all_turns_allowed || turn_allowed[f][t-1])
+                        {
+                            Twist twist = Twist(Face(f), t);
+                            Position next = position;
 
-                        next.cube.twist(twist);
-                        next.twists.add(twist);
+                            next.cube.twist(twist);
+                            next.twists.add(twist);
 
-                        stack.push(next);
-                        pushed++;
+                            stack.push(next);
+                            pushed++;
+                        }
                     }
                 }
             }
