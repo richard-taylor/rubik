@@ -32,3 +32,6 @@ test/t_*
 
 # Dependency directory
 .d/
+
+# Rust compiled targets
+rust/target/
