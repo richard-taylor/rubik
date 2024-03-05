@@ -2,8 +2,8 @@
 
 ## 2x2x2
 
-This is some code I have had kicking around for a while. The 2x2x2 solver is
-in Python because I wanted to see if I could write an algorithm that could
+This is some code I have had kicking around for a long time. The 2x2x2 solver
+is in Python because I wanted to see if I could write an algorithm that could
 solve it in under a second without any fancy code optimisations.
 
 The key idea is to generate a cache of all the positions that are 5 moves
@@ -19,7 +19,14 @@ The timing in the script includes the time to generate the cache. If it
 didn't then you might as well cache all 4 million positions and not bother
 solving anything...
 
-## 3x3x3
+## 3x3x3 (version 2)
+
+I am currently learning Rust and decided to rework some of my FMC tools in
+that language. Both as a learning exercise and to apply what I learned
+along the way last time - in particular I want to make them multi-threaded
+to speed up the searching.
+
+## 3x3x3 (version 1)
 
 On the 3x3x3 cube I am interested in tools to help me practise the
 Fewest Moves Challenge (FMC). These are in C++ because the scale of
